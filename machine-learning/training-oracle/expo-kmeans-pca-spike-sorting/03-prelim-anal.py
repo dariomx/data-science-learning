@@ -2,7 +2,7 @@ import numpy as np
 from load_data import load_data
 from scipy.stats.mstats import mquantiles
 
-_, data, data_len = load_data()
+data, data_len = load_data()
 
 print("3.0 Data size")
 print("data_len = %d" % data_len)
