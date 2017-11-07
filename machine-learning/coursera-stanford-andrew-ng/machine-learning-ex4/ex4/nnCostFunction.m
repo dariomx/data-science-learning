@@ -74,6 +74,26 @@ J = sum(1/m * sum(-Y.*log(h) - (1 - Y).*log(1 - h)));
 J += lambda/(2*m) * sum((Theta1(:, 2:end).^2)(:));
 J += lambda/(2*m) * sum((Theta2(:, 2:end).^2)(:));
 
+% upto here the cost function, below the back propagation
+g = @(x) sigmoid(x);
+gp = @(z) sigmoidGradient(z);
+for i = 1:m
+    x = X(i, 2:end)';
+    yp = Y(i, :)';
+    a_1 = [1; x];
+    z_2 = Theta1 * a_1;
+    a_2 = [1; g(z_2)];
+    z_3 = Theta2 * a_2;
+    a_3 = g(z_3);
+    d_3 = a_3 - yp;
+    d_2 = (Theta2' * d_3) .* [1; gp(z_2)];
+    Theta1_grad += 1/m * (d_2(2:end) * a_1');
+    Theta2_grad += 1/m * (d_3 * a_2');
+end
+
+Theta1_grad(:,2:end) += lambda/m * Theta1(:,2:end);
+Theta2_grad(:,2:end) += lambda/m * Theta2(:,2:end);
+
 % =========================================================================
 
 % Unroll gradients
