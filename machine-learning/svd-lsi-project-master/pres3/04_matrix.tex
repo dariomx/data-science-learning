@@ -1,0 +1,29 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [plain]
+\frametitle{SVD Decomposition}
+\begin{block}{}
+$A = U \Sigma V^{T}$
+\begin{itemize}
+  \item $U$ and $V$ are orthogonal matrices
+  \item $\Sigma$ is a diagonal matrix that contain the \textit{singular values} $\sigma_i$ of
+A; $\sigma_1 \geq \sigma_2 \geq ... \geq \sigma_n \geq 0$
+\end{itemize}
+\end{block}
+\begin{block}{}
+In the 20th century, focus was on obtaining efficient algorithms for SVD
+computation
+\begin{itemize}
+  \item Several implementations of SVD solvers
+  \begin{itemize}
+    \item SVDPACK(C)
+    \item SVDLIBC
+    \item LAPACK
+    \item ...
+  \end{itemize}
+  \item Gensim contains the SVD solver that best matches our problem (as far as we could investigate)
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

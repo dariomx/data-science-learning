@@ -1,0 +1,173 @@
+\subsubsection{The gramian matrix $\trans{A}A$}
+
+We brought the \cref{fig:fund} not only to illustrate the
+Fundamental Theorem of Linear Algebra, but also to justify the
+introduction of the matrix $\trans{A}A$ (also called the gramian
+matrix of $A$). From the figure, it can be seen that the matrix $A$
+takes the row space \C{\trans{A}} into the column space \C{A}; and we
+know that both subspaces have the same dimension $r =
+\func{rank}(A)$. As Strang explains in \cite{strang88}, the
+dimensions of the domain \R{n} and codomain \R{m} do not tell the real
+story about the linear transformation behind $A$; it is rather the
+dimensions of \C{\trans{A}} and \C{A}. \\
+
+If we just pay attention to
+those subspaces, then the matrix $A$ behaves like a bijection (this is
+proved in \cite{strang88}); that is, if we took the submatrix of
+dimensions $r \times r$ that results from eliminating dependent rows
+and columns in $A$, such matrix would be invertible and the inverse would
+take the column space \C{A} into the row space \C{\trans{A}}. 
+Thus, the real information of matrix $A$ lies in the one-to-one
+transformation of \C{\trans{A}} into \C{A}; the null spaces in both
+sides (\N{A} and \N{\trans{A}}) do not contribute much to the
+the transformation $A$, as they just get compressed to the zero vector. \\
+
+Alright, putting aside the null spaces and focusing only in the
+bijection that $A$ performs between the row and column spaces, one may
+be tempted to think from \cref{fig:fund} that the transpose of $A$
+(denoted as \trans{A}), is actually the inverse of $A$ in the context
+of those subspaces. But as Strang promptly clarifies in
+\cite{strang88}, that honor belongs only to the actual inverse of
+A. We refer to the inverse here, not in the regular sense, but
+restricted to the subspaces \C{\trans{A}} and \C{A} (that is, we are
+talking about the inverse of the submatrix of $k \times k$ that we
+mentioned above). The effect of \trans{A} is 
+correct at the level of the whole subspace \C{A}; it takes it back to
+\C{\trans{A}}. But the vectors that were originally mapped by $A$, are
+not necessarily recovered after applying \trans{A} to that image
+$A\vec{x}$. \\
+
+One particular way of reinforcing the fact that \trans{A} is not the
+inverse, is by an indirect measure. If we take the dot product between
+the starting point \vec{x} in \R{n}, and the result of applying
+\trans{A} to its image $A\vec{x}$, that would give us an indication of
+how close or distant they are (in the end, the dot product and the
+orthogonal projection are intimately related). If the starting and
+final vectors happen to be the same, the cited dot product shall be
+$\norm{x}_2^2$ (where $\norm{.}_2$ represents the known euclidean
+distance). Let us confirm ourselves that is not the case: \\
+
+\begin{align*}
+& \vec{x} \cdot (\trans{A} A\vec{x}) &= \\
+& \trans{\vec{x}} (\trans{A} A\vec{x}) &= \\
+& (\trans{\vec{x}} \trans{A}) (A\vec{x}) &= \\
+& \trans{(A\vec{x})} (A\vec{x}) &= \\
+& (A\vec{x}) \cdot (A\vec{x}) &= \\
+  & \norm{A\vec{x}}_2^2 &\le 
+& \norm{A}_2^2 \norm{\vec{x}}_2^2
+\end{align*}
+\hfill
+
+From the above development, we can see indeed that $\vec{x}
+\cdot (\trans{A} A\vec{x}) \ne \norm{x}_2^2$; actually, in the last step
+we used a general property of matrix norms, which in particular applies
+to the extension of the vector norm $\norm{.}_2$ to matrices. We will not
+define it formally, but it suffices to keep the intuition that norm of
+$A$, denoted as $\norm{A}_2$, is a measure of the distortion that the linear
+transformation $A$ does on the space (is actually the maximum
+distortion on the unit sphere). In the last step we can see that 
+such measure of distortion, is precisely one of the factors that
+prevents that simply taking the transpose \trans{A} as a way back,
+sends us to the starting point in the row space. \\
+
+Above reasoning is a further argument for $\trans{A} \ne \inv{A}$;
+such special property only applies to orthogonal matrices (like the
+$U$ and $V$, which appear in the SVD factorization). For orthogonal
+matrices, $\trans{A} A = I$, where $I$ is the identity matrix; and
+though that does not occur in general for an arbitrary matrix $A$, the
+function composition represented by $\trans{A}A$ is quite interesting;
+it may not be the identity function, but at least it has one of its
+properties: \\
+
+\[
+\trans{(\trans{A}A)} = \trans{A}\trans{(\trans{A})} = \trans{A}A
+\]
+\hfill
+
+The matrix $\trans{A}A$ (called gramian) is equal to its transpose, which is the
+definition of a symmetric matrix. This particular symmetric matrix
+is quite important for us, as it represents the bridge between the SVD
+factorization and the Spectral Theorem; in short, the Spectral Theorem
+guarantees that any symmetric matrix is diagonalizable, and applying such
+factorization to our special matrix $\trans{A}A$, give us the two bases
+that we need to build the SVD factorization (which happen contain, the
+bases of the four subspaces of $A$). These details will be developed in
+the next two sections. For the moment, we will just finish the current one
+by establishing a few more facts about $\trans{A}A$, which
+show its close connection with $A$. \\
+
+Is not hard to show that $\trans{A}A$ and $A$ share the same null
+space; and that actually implies that the rank of both matrices is
+the same. Let us state that in a theorem and prove it:
+
+\begin{theorem}[Rank of the Gramian Matrix]
+\label{thm:gramr}
+Let $A$ be a real matrix of rank $r$ $\implies$ its gramian matrix
+$\trans{A}A$ has the same rank $r$.
+\end{theorem}
+\hfill
+
+\begin{proof}
+Let us begin proving that \N{A} = \N{\trans{A}A}.  Let \vec{x} $\in
+\N{A}$, then: \\ 
+
+\[
+A\vec{x} = \vec{0} \ds{\iff} \trans{A}(A\vec{x}) = \trans{A}\vec{0}
+\ds{\iff} \trans{A}A\vec{x} = \vec{0}
+\]
+\hfill
+
+Above just proves that $\N{A} \subset \N{\trans{A}A}$, but the other
+contention can also be deduced. Let $\vec{x} \in \N{\trans{A}A}$, then: \\
+
+\begin{align*}
+& \trans{A}A\vec{x} = \vec{0} &\iff \\
+& \trans{\vec{x}}\trans{A}A\vec{x} = \trans{\vec{x}}\vec{0} &\iff \\
+& \trans{(A\vec{x})} A\vec{x} = 0 & \iff \\
+& (A\vec{x}) \cdot (A\vec{x}) = 0 & \iff \\
+& \norm{A\vec{x}}_2^2 = 0 & \iff \\
+& A\vec{x} = \vec{0} & \iff \\
+& \vec{x} \in \N{A}
+\end{align*}
+\hfill
+
+The two developments above show that $\N{\trans{A}A} = \N{A}$, that in
+particular means that $\dim{\N{\trans{A}A}} = \dim{\N{A}}$. If we
+apply the \cref{thm:ortdim} theorem to each matrix, we get the same
+dimension for the row space (the row spaces of both matrices live in
+\R{n}, which has dimension $n$ of course): \\
+
+\[
+\dim{\C{\trans{A}}} = n - \dim{\N{A}} = n - \dim{\N{\trans{A}A}} = \dim{\C{\trans{(\trans{A}A)}}}
+\]
+\hfill
+
+Knowing that the dimension of the row spaces is the same, we just need
+to recall that $\dim{\C{\trans{A}}} = \func{rank}(A)$, and then we can
+conclude that $\func{rank}(A) = \func{rank}(\trans{A}A)$.
+\end{proof}
+\hfill
+
+Another useful result about the matrix $\trans{A}A$, that we will need
+when proving the SVD theorem, talks about the qualities of its
+eigenvalues. \\
+
+\begin{theorem}
+\label{thm:grameig}
+Let $A$ be a real matrix of rank $r$, then its gramian matrix
+$\trans{A}A$ has $r$ positive eigenvalues. 
+\end{theorem}
+\hfill
+
+Besides reusing \cref{thm:gramr}, the key step in proving 
+this result, has to do with the previously 
+used fact that $\trans{\vec{x}}\trans{A}A\vec{x} = 
+\norm{A}_2^2 \ge 0$; which implies that $\trans{A}A$ is not only symmetric
+but also semipositive-definite (by definition). And it turns out, that
+semipositive-definite matrices have the desired property of having $r$
+positive eigenvalues. We will not prove this theorem here, but
+\cite{strang88} can be consulted for further details. 
+
+
+
+

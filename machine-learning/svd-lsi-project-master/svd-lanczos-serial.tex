@@ -1,0 +1,42 @@
+\section{Derivation of the serial algorithm}
+
+The algorithm to numerically solve the SVD problem, that we chose for
+this report, is essentially the one published by Berry on his PhD
+thesis (\cite{berry91}). Despite of being more than 20 years old, we can
+tell that it is still widely used, in particular by LSI software. A
+big part of the opensource LSI implementations that we found (see
+introductory chapter), refer to either the Fortran77 SVDPACK
+(\cite{svdpack}), to its C incarnation SVDPACKC (\cite{svdpackc}), or
+to its even newer skin SVDLIBC (\cite{svdlibc}). All of them are
+essentially the same algorithm that Berry published in his PhD
+thesis. \\
+
+We will proceed to derive the algorith in the next sub-sections. A
+cautionary warning about the level of detail presented is appropriate:
+although we would like to offer the same level of detail and
+technicality than the theory \cref{cha:svd-theory}, time constraints
+for the delivery of this report forced us just to omit the theorems
+and its proofs. A pending task, for this project to evolve into a full
+Msc. thesis, would be to achieve the same level of formality than
+\cref{cha:svd-theory}, indeed. Such exercise is actually required, if
+one pretends to offer an innovation to the problem of efficiently
+compute the SVD for LSI problem. Let us consider it a pending task
+then, for the time being. \\
+
+Since we established the equivalence of the SVD problem, to that of the
+eigenproblem for gramian matrix $\trans{A}A$, is important that we
+keep in mind such alternate formulation the next sections to come. From now
+on, to the end of this section, our goal will be to find the
+eigenvalues and eigenvectors of a symmetric matrix; assuming that the
+calculations are to be performed on a computer with finite
+precision. We will find with simple methods, and evolve them until we
+reach the level of sophistication that we require for a practical SVD
+algorithm. \\
+
+\input{svd-lanczos-serial-power.tex}
+\input{svd-lanczos-serial-ritz.tex}
+\input{svd-lanczos-serial-step.tex}
+\input{svd-lanczos-serial-alg.tex}
+
+
+

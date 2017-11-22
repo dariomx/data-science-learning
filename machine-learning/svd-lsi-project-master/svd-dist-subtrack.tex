@@ -1,0 +1,110 @@
+\section{Subspace tracking}
+
+\Rehurek does a very comprehensive survey of the state of the art
+regarding SVD algorithms, in order to position the variant that he
+proposes in a wider context. This is because there are a lot of
+variants of SVD algorithms over there, each one emphasizing a
+different subset of aspects. Actually, let us remember that we have
+already restricted ourselves in a couple of aspects, when we focused
+our attention to the particular application of LSI: \\
+
+\begin{itemize}
+\item The LSI term-document matrices are highly sparse, which allows
+  one to prune a big branch of the SVD tree of algorithms. 
+\item The LSI applications require a truncated SVD factorization,
+  usually of a few hundred entries; therefore, algorithms that take
+  advantage of such truncation are preferred. 
+\end{itemize}
+\hfill
+
+\Rehurek goes even further on this specialization approach, and
+imposes himself additional restrictions:
+
+\begin{enumerate}
+\item Distributable: he seems specially interested in achieving a
+  high-level parallelization of the problem, that can be split across
+  the nodes of a commodity cluster.\\
+
+\item Online: contrary to a batch SVD algorithm, he is interested in
+  an algorithm that is capable of 
+  reusing the already computed SVD factorization, in such a way that
+  one can update previous solution when new data comes available. This
+  can be useful in today's applications for LSI, which may get the
+  documents from social networks or similar environments that can be
+  thought as a permanent and basically unlimited source of
+  data. Recalculating from scratch the SVD may be unfeasible under
+  those circumstances, hence updating an existing solution is
+  desired.\\
+
+\item One pass: as discussed in previous chapter, among the most advanced
+  parallel algorithms for SVD use the so called approach of Krylov
+  subspaces (Lanczos,Arnoldi); they do require though, several passes
+  to the data. But \Rehurek is interested on streamed environments,
+  where saving all the data may be just unfeasible; hence, he proposes
+  instead an algorithm that consumes the data in a single pass and
+  discards it. This applies again to the documents of the LSI 
+  problem; let us recall that the term-matrix of $m \times n$ is very
+  wide in the horizontal sense ($n >> m$); this situation comes from
+  the fact that we have much more documents (columns) than terms
+  (rows). Putting again the sample application that extracts the
+  documents from social networks, the terms used for English
+  language is typically around $100,000$ and is assumed to be static, while
+  documents can be generated constantly in volumes of
+  millions. Wanting to accumulate them all, for the sake of having the SVD
+  factorization that covers everything, does not seem practical
+  either; hence, on a given time we update existing solution with new
+  data and immediately discard it (keeping only results the
+  factorization). \\
+
+\item Constant memory: strong emphasis is placed on the memory
+  complexity of the algorithm, aiming to avoid dependency on the input
+  data. The memory complexity of an algorithm that saved all
+  documents, historically, can be seen just as \bigO{n}, where $n$
+  is the number of columns of the term-document matrix. But the
+  distributed algorithm ensures that memory requirements are
+  controlled, and depend mostly on the size of truncated matrix (which
+  is usually a few hundreds for LSI).
+\end{enumerate}
+\hfill
+
+An algorithm that posses all these attributes: online, one pass and
+using constant memory, can be considered an instance of the so called
+``subspace tracking'' approach. The term may not intuitively reflect
+all the properties, but we tried to come up a justification of the
+name. It may come from the fact that the
+SVD factorization, among several other factorizations, essentially
+gives us subspaces that characterize our input matrix (recall that the
+matrices $V$ and $U$ contain basis for the four subspaces
+$\C{\trans{A}}, \N{A}, \C{A},  \N{\trans{A}}$). As we
+update our factorization due new data, such subspaces may change; then, by
+continuously updating the basis (SVD matrices) we could say that the
+subspace they generate is being ``tracked'' across
+time \footnote{This attempt to explain the origin of the 
+  term is of our own, and is just to help one understanding the term of
+  ``subspace tracking''; but texts and books about it, usually in the
+  area of Signal Processing, do not seem to explain the concept in this way.}. 
+
+It may not be evident but the characteristics imposed on the algorithm
+for being one-pass and online, actually imply that we can not store
+the matrix $V$ from the SVD factorization. As suggested above, such
+storage is prohibitive because its dimensions $n \times n$, which come
+directly from the number of documents to handle throughout time (which
+taken historically, can be a huge amount). An essential variant of the
+algorithm proposed by \Rehurek then, is that it just deals with the
+calculation of the matrices $U$ and $\Sigma$; leaving $V$ behind. How
+is that possible? Please refer to section \cref{sec:svd-lanczos-eigen}
+for an explanation of the equivalence between the SVD problem, and the
+Eigenproblem of either symmetric matrix $\trans{A}A$ or $A\trans{A}$. \\
+
+Therefore, if we are just interested in matrices $U$ and $\Sigma$ of
+the SVD factorization; we can restate our goal as solving the
+eigenproblem for symmetric matrix $A\trans{A}$. That is, finding its
+eigenvalues ($\Sigma^2$) and eigenvectors ($U$). \\
+
+Before proceeding to review the details of procedure
+$\func{Merge-SVD}$, which serves to merge two SVD factorizations, is
+important to clarify that \Rehurek uses the matrix $P$ in his
+pseudocode as a tuple $(U,\Sigma)$ rather than as the product
+$\inv{\Sigma}\trans{U}$. This is due practical reasons, as we need to
+individually access the original matrices; but still the name $P$ is
+kept, to remind us that they can form the projection matrix. 

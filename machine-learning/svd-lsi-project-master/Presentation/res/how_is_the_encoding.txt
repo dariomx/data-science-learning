@@ -1,0 +1,202 @@
+[Turney10]
+First, we need to tokenize the raw text; that is, we need to decide
+what constitutes a term and how to extract terms from raw text. 
+
+Second, we may want to normalize the raw text, to convert superficially different strings of characters to the same form (e.g., car, Car, cars, and Cars could all be normalized to car). 
+
+Third, we may want to annotate the raw text, to mark identical strings of characters as being different (e.g., fly as a verb could be annotated as fly/VB and fly as a noun could be annotated as fly/NN).
+
+Semantic Vectors
+http://code.google.com/p/semanticvectors/
+[semantic-vectors1.png] 8Gb
+
+[Curran02]
+Vector-space thesaurus extraction can be separated
+into two independent processes. The first step extracts 
+the contexts from raw text and compiles them into a 
+vector-space statistical description of the contexts 
+each potential thesaurus term appears in.
+ 
+We define a context relation as a tuple (w, r, w')
+where w is a thesaurus term, occurring in relation
+type r, with another word w' in the sentence. The
+type can be grammatical or the position of w' in a
+context window: the relation (dog, direct-obj,
+walk) indicates that the term dog, was the direct object 
+of the verb walk. Often we treat the tuple (r, w')
+as a single unit and refer to it as an attribute of w.
+
+The simplest method we implemented extracts the
+occurrence counts of words within a particular win-
+dow surrounding the thesaurus term. These window
+extractors are very easy to implement and run very
+quickly. 
+
+The second step in thesaurus extraction performs
+clustering or nearest-neighbour analysis to deter-
+mine which terms are similar based on their context
+vectors. For nearest-neighbour measurements
+we must define a function to judge the similarity be-
+tween two context vectors (e.g. the cosine measure)
+and a function to combine the raw instance frequen-
+cies for each context relation into weighted vector
+components.
+
+We combined the BNC and Reuters corpus to
+produce a 300 million word corpus. The sentences
+were randomly shuffled together to produce a sin-
+gle homogeneous corpus. This corpus was split into
+two 150M word corpora over which the main experi-
+mental results are averaged. We then created smaller
+1/2 down to 1/64th of each 150M corpus. The next section 
+describes the method of evaluating each thesaurus 
+created by the combination of a given context extraction 
+system and corpus size.
+
+For each term we extracted a thesaurus entry with 200 
+potential synonyms and their weighted Jaccard scores.
+
+Since MINIPAR performs morphological analysis on
+the context relations we have added an existing mor-
+phological analyser (Minnen et al., 2000) to the
+other extractors. Table 4 shows the improvement
+gained by morphological analysis of the attributes
+and relations for the SEXTANT 150M corpus 
+(345mb -> 302mb -> 272mb).
+
+The improvement in results is quite significant, as
+is the reduction in the representation space and num-
+ber of unique context relations. The reduction in the
+number of terms is a result of coalescing the plu-
+ral nouns with their corresponding singular nouns,
+which also reduces data sparseness problems. The
+remainder of the results use morphological analysis
+of both the words and attributes.
+
+Given a fixed time period (of more than the four
+days MINIPAR takes) and a fixed 150M corpus we
+would probably still choose to use MINIPAR unless
+the representation was too big for our learning algo-
+rithm, since the thesaurus quality is slightly better.
+
+
+[Curran04]
+2 billion words [curran04a.png] [curran04b.png]
+
+
+[Symonds11]
+Models of word meaning, built from a corpus of text, have demonstrated
+success in emulating human performance on a number of cognitive tasks. Many of these models use geometric representations of words to store semantic associations between words. Often word order information is not captured in these models. The lack of structural information used by these models has been raised as a weakness when performing cognitive tasks.
+This paper presents an efficient tensor based approach to modelling word meaning that builds on recent attempts to encode word order information, while providing flexible methods for extracting task specific semantic information.
+
+[Turney07]
+In information retrieval (Deerwester et al., 1990),
+SVD is typically applied to a term × document ma-
+trix, where each row represents a word and each col-
+umn represents a document in the collection. An
+element in the matrix is a weight that represents the
+importance of the given word in the given document.
+SVD smoothes the weights, so that a document d
+will have a nonzero weight for a word w if d is simi-
+lar to other documents that contain the word w, even
+if d does not contain actually contain w. Thus a
+search for w will return the document d, thanks to
+the smoothing effect of SVD.
+
+To extend the term-document matrix to a third-
+order tensor, it would be natural to add information
+such as author, date of publication, citations, and
+venue (e.g., the name of the conference or journal).
+For example, Dunlavy et al. (2006) used a tensor
+to combine information from abstracts, titles, key-
+words, authors, and citations. Chew et al. (2007) ap-
+plied a tensor decomposition to a term × document
+× language tensor, for cross-language information
+retrieval. Sun et al. (2006) analyzed an author ×
+keyword × date tensor.
+
+In our recent work, we have begun exploring ten-
+sor decompositions for semantic space models. We
+are currently developing a word × pattern × word
+tensor that can used for both synonyms and analo-
+gies. The experiments in Section 5.4 evaluate the
+four tensor decomposition algorithms using this ten-
+sor to answer multiple-choice TOEFL questions.
+
+[Kang12]
+Many data are modeled as tensors, or multi dimensional arrays. 
+Examples include the predicates (subject, verb, object) in knowl- 
+edge bases, hyperlinks and anchor texts in the Web graphs, sen- 
+sor streams (time, location, and type), social networks over time, 
+and DBLP conference-author-keyword relations. Tensor decompo- 
+sition is an important data mining tool with various applications 
+including clustering, trend detection, and anomaly detection. How- 
+ever, current tensor decomposition algorithms are not scalable for 
+large tensors with billions of sizes and hundreds millions of nonze- 
+ros: the largest tensor in the literature remains thousands of sizes 
+and hundreds thousands of nonzeros. 
+
+Consider a knowledge base tensor consisting of about 26 mil- 
+lion noun-phrases. The intermediate data explosion problem, as- 
+sociated with naive implementations of tensor decomposition algo- 
+rithms, would require the materialization and the storage of a ma- 
+trix whose largest dimension would be ≈ 7 · 1014 ; this amounts to 
+∼ 10 Petabytes, or equivalently a few data centers worth of storage, 
+thereby rendering the tensor analysis of this knowledge base, in the 
+naive way, practically impossible. In this paper, we propose GIGATENSOR , a scalable distributed algorithm for large scale tensor 
+decomposition. GIGATENSOR exploits the sparseness of the real 
+world tensors, and avoids the intermediate data explosion problem 
+by carefully redesigning the tensor decomposition algorithm. 
+
+Extensive experiments show that our proposed G IGAT ENSOR 
+solves 100× bigger problems than existing methods. Furthermore, 
+we employ G IGAT ENSOR in order to analyze a very large real 
+world, knowledge base tensor and present our astounding findings 
+which include discovery of potential synonyms among millions 
+of noun-phrases (e.g. the noun ‘pollutant’ and the noun-phrase 
+‘greenhouse gases’). 
+
+There exist two, widely used, toolboxes that handle tensors and
+tensor decompositions: the Tensor Toolbox for Matlab [6], and
+the N-way Toolbox for Matlab [3]. Both toolboxes are considered
+the state of the art; especially, the Tensor Toolbox is probably the
+fastest existing implementation of tensor decompositions for sparse
+tensors (having attracted best paper awards, e.g. see [22]). How-
+ever, the toolboxes have critical restrictions: 1) they operate strictly
+on data that can fit in the main memory, and 2) their scalability is
+limited by the scalability of Matlab.
+
+In this paper, we propose GIGATENSOR, a scalable distributed
+algorithm for large scale tensor decomposition. G IGAT ENSOR can
+handle Tera-scale tensors using the M AP R EDUCE [11] framework,
+and more specifically its open source implementation, H ADOOP
+[1]. To the best of our knowledge, this paper is the first approach of
+deploying tensor decompositions in the M AP R EDUCE framework.
+The main contributions of this paper are the following.
+esign, Experimentation
+• Algorithm. We propose G IGAT ENSOR, a large scale tensor
+decomposition algorithm on M AP R EDUCE. G IGAT ENSOR
+is carefully designed to minimize the intermediate data size
+and the number of floating point operations.
+• Scalability. G IGAT ENSOR decomposes 100× larger tensors
+compared to existing methods, as shown in Figure 4. Fur-
+thermore, G IGAT ENSOR enjoys near linear scalability on the
+number of machines.
+
+Contextual Synonym Detection.
+In [9], we analyzed a knowledge base dataset, coming from the Read the Web project [1]; this dataset recorded (noun-phrase, noun-phrase, context) relationships (such as the example of Figure 1); the size of
+the tensor was 26M × 26M × 48M , which made it prohibitive to analyze, for any existing tool. After obtaining the PARAFAC decomposition, we were able to perform contextual synonym detection, i.e. detect
+noun-phrases that may be used in similar contexts. Using cosine similarity, we took the low dimensional representation of each noun-phrase, as expressed by matrix A, and we calculated the similarity of each
+noun-phrase to the rest. In this way, we were able to obtain noun-phrases that are contextually similar, albeit not synonyms in the traditional sense. Figure 5 contains the most notable ones.
+
+
+We compare the scalability of G IGAT ENSOR and the Tensor
+Toolbox for Matlab [6] which is the current state of the art in terms
+of handling fast and effectively sparse tensors. The Tensor Toolbox
+is executed in a machine with a quad-core AMD 2.8 GHz CPU,
+32 GB RAM, and 2.3 Terabytes disk. To run G IGAT ENSOR, we
+use CMU’s OpenCloud H ADOOP cluster where each machine has
+2 quad-core Intel 2.83 GHz CPU, 16 GB RAM, and 4 Terabytes
+disk.
+
+

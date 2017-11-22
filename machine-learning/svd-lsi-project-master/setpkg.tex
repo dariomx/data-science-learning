@@ -1,0 +1,19 @@
+\graphicspath{{./res/}}
+\DeclareGraphicsExtensions{.png}
+
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  breaklines=false
+}
+
+\usetikzlibrary{positioning,chains,fit,shapes,calc}
+
+\newtheorem{theorem}{Theorem}[chapter]
+
+% not sure why cref now refers to algs as ``line''
+\crefname{line}{algorithm}{algorithms}
+
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+

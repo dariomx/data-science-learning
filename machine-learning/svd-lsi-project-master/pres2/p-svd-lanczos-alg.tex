@@ -1,0 +1,43 @@
+\begin{frame}[plain]
+	\begin{block}{}
+\begin{algorithm}[H]
+  \label{alg:lasvd}
+  \caption{The Single-Vector Lanczos Algorithm}
+%
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+    \Input{A matrix $A^{m \times n}$ and a truncation factor
+    $k$}
+%
+    \Output{The $k$ singular values and its associated right singular
+      vectors of $A$. Both are numeric approximations.}
+%
+    \BlankLine
+    Use Lanczos Tridiagonalization Step to generate a family of
+    $c$ symmetric tridiagonal matrices $\{ T_j \}$ for $\trans{A}A$
+    ($c > k$) \;
+    \BlankLine
+%
+    Compute the eigenvalues and eigenvectors of $T_k$ using the
+    (implicit) QL Method. \;
+    \BlankLine
+%   
+    For each computed $\lambda_i$ of $T_k$, calculate the associated
+    unit eigenvector $\vec{z_i}$ such that $T_k\vec{z_i} =
+    \lambda_i\vec{z_i}$. \; 
+    \BlankLine
+% 
+    For each calculated eigenvector $\vec{z_i}$ of $T_k$, compute the Ritz
+    vectors $v_i = Q_c\vec{z_i}$ as an approximation to the
+    $i$-th eigenvector of $\trans{A}A$. Note that the matrix $Q_c$ is
+    a side product of the first step. \; 
+    \BlankLine
+%
+    return $(\{\lambda_1,\lambda_2,\cdots,\lambda_k\},
+            \{\vec{v_1},\vec{v_2},\cdots,\vec{v_k}\})$
+%
+\end{algorithm}
+	\end{block} 
+\end{frame}

@@ -1,0 +1,35 @@
+\begin{frame}[plain]
+\frametitle{Conclusions}
+\begin{block}{}
+We found that the following is still required:
+\begin{itemize}
+\item Enhance memory complexity study of Rehurek's algorithm
+\item Need a modern sensible experiment that compares best parallel/distributed algorithms taking into account the architecture of modern computers
+\begin{itemize}
+\item Compare against Mahout, SLEPc, LingPipe, GraphLab, etc.
+\item Use experiments similar to those that Rehurek did. 
+\item Need to use much more documents and more nodes in the cluster
+\item Could get benchmark matrices used by Oracle's alternative
+\end{itemize}
+\item For the case of Rehurek's, profiling experiments similar to those made by Berry, could help identify bottlenecks
+\begin{itemize}
+\item Base case SVD
+\item Merge Algorithm
+\end{itemize}
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[plain]
+\frametitle{Conclusions}
+\begin{block}{}
+\begin{itemize}
+\item Need to research whether Rehurek's merge algorithm is optimal or not
+\item Need to try other merge alternatives
+\item Need an experiment with different implementations of the base case SVD solver
+\begin{itemize}
+\item Could try parallel versions of SVDLIBC (BLAS/LAPACK)
+\end{itemize}
+\end{itemize}
+\end{block}
+\end{frame}

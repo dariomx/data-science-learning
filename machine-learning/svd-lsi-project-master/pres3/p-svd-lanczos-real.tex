@@ -1,0 +1,15 @@
+\begin{frame}[plain]
+	\frametitle{Lanczos Algorithm Reality Check}
+	\begin{block}{Is it numerically stable?}
+    No, the tridiagonalization step needs to be rewritten (thanks Paige!).
+	\end{block}   
+	\begin{block}{Is orthogonality really guaranteed?}
+    No, it is lost as $\beta_k$ becomes small (thanks again
+    Paige!). Selective re-orthogonalization is required 
+    (thanks to Parlett and Simon).
+	\end{block}
+	\begin{block}{What to do then?}
+    Berry's implementation, LASVD/LAS2, consider all aspects above;
+    including performance (parallelization). 
+	\end{block}
+\end{frame}

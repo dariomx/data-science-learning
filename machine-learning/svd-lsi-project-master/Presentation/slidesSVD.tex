@@ -1,0 +1,41 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{sansmathaccent}
+\usepackage{setspace}
+\usepackage{mathtools}
+\pdfmapfile{+sansmathaccent.map}
+%\usetheme{Default}
+\usepackage{}
+\setbeamercovered{highly dynamic}
+\setbeamersize{text margin left=5pt}
+\usepackage{listings}
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=false
+}
+\usepackage{graphicx}
+\graphicspath{{./res/}}
+\DeclareGraphicsExtensions{.pdf,.jpg,.png}
+\usepackage{animate}
+\usepackage[linesnumbered,ruled,noend]{algorithm2e}
+\newcommand{\andspc}{\;\;\land\;\;}
+\input{cmds.tex}
+
+\title{Parallel and Distributed Computing: \\Singular Value Decomposition in the
+context of massive online Latent Semantic Analysis}
+\author{Bahena, Zavaleta}%
+\institute{CINVESTAV - ORACLE}
+\date{August, 2015}
+
+\begin{document}
+	\begin{frame}[plain]
+	  \titlepage
+	\end{frame}
+  \input{04_matrix.tex}
+  \input{05_LSI.tex}
+  \input{06_example.tex}
+  \input{00_intro.tex}
+    \input{07_distributed.tex}
+  \input{08_conclusion.tex}
+\end{document}

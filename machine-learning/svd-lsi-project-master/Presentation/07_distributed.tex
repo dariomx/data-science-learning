@@ -1,0 +1,102 @@
+\begin{frame}[plain]
+\begin{algorithm}[H] 
+  \caption{Distributed-SVD: Distributed SVD for LSI (global)}
+%
+  \setstretch{1.35}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+    \Input{Truncation factor $k$, queue of jobs $A= [A_1, A_2, \dots ]$}
+%
+    \Output{Matrices $U^{m \times k}$ and $\Sigma^{k \times k}$, 
+      from the SVD decomp. of $A$}
+%
+    \For {\textbf{all} (node $i$ in cluster)}
+    {
+      $B_i \gets \text{subset of the queue of jobs } [A_1,A_2,\dots]$ \;
+%
+      $P_i = (U_i,\Sigma_i) \gets \func{SVD-Node}(k,B_i)$ \;
+    }
+    $(U,\Sigma) \gets \func{Reduce}(\func{Merge-SVD},[P_1,P_2,\dots])$ \;
+%
+    return $(U, \Sigma)$ \;
+\end{algorithm}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[plain]
+\begin{algorithm}[H]
+  \caption{SVD-Node: Distributed SVD for LSI (node)}
+%
+  \setstretch{1.35}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+  \Input{Truncation factor $k$, queue of jobs $A_1,A_2,\dots$}
+%
+  \Output{Matrices $U^{m \times k}$ and $\Sigma^{k
+        \times k}$, from the SVD  of $[A_1,A_2,\dots]$}
+%
+  $P = (U,\Sigma) \gets 0^{m \times k} 0^{k \times k}$ \;
+%
+  \For {each job $A_i$}
+  {
+    $\prim{P} = (\prim{U},\prim{\Sigma}) \gets \func{Basecase-SVD}(k,A_i)$ \;
+%
+    $P = (U^{m \times k},\Sigma^{k \times k}) \gets \func{Merge-SVD}(k, P, \prim{P})$ \;
+  }
+%
+  return $(U,\Sigma)$ \;
+\end{algorithm}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[plain]
+\begin{algorithm}[H]
+  \label{alg:merge-svd}
+  \caption{$\func{Merge-SVD}$: Merge of two SVD factorizations}
+%
+  \setstretch{1.35}
+  \DontPrintSemicolon
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+%
+  \Input{Truncation factor $k$, decay factor $\gamma$,  
+    $P_1 = (U_1^{m \times k_1}, \Sigma_1^{k_1 \times k_1})$,
+    $P_2 = (U_2^{m \times k_2}, \Sigma_1^{k_2 \times k_2})$}
+%
+  \Output{$(U^{m \times k}, \Sigma^{k \times k})$}
+%
+  $Z^{k_1 \times k_2} \gets \trans{U_1}U_2$ \;
+%
+  $\prim{U} R \xleftarrow{QR} U_2 - U_1 Z$ \;
+%
+  $U_R \Sigma\trans{V_R} \xleftarrow{SVD_k}
+    \begin{bmatrix}
+      \gamma\Sigma_1 & Z \Sigma_2 \\
+      0 & R\Sigma_2
+    \end{bmatrix}^{(k_1 + k_2) \times (k_1 + k_2)}$ \;
+%
+  $\begin{bmatrix}
+      R_1^{k_1 \times k} \\
+      R_2^{k2 \times k}
+    \end{bmatrix} = U_R$ \;
+%
+  $U \gets U_1R_1 + \prim{U}R_2$ \;
+%
+  return $(U,\Sigma)$ \;
+\end{algorithm}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[plain]
+\frametitle{Distributed Algorithm}
+\begin{block}{}
+      Complexity is according to him $O(mk^2)$
+      \begin{itemize}
+      \item Processed Wikipedia (3.2M documents, 100K words) in 2.5 hours in a 4 nodes cluster
+      \item Using BLAS/LAPACK in the merge algorithm it took 1 hour and 41 minutes
+      \item Another custom implementation of another SVD algorithm took 109
+hours
+      \end{itemize}
+\end{block} 
+\end{frame}

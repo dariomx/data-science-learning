@@ -1,0 +1,32 @@
+\begin{frame}[plain]
+	\begin{block}{}
+\begin{algorithm}[H]
+%
+  \caption{Lanczos Tridiagonalization Step (sparse,2,$Q$)}
+  \setstretch{1.5}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+    \Input{A unit vector $\vec{q_1} \in \R{n}$ and a symmetric matrix $B^{n
+        \times n}$}
+%
+    \Output{The sequences $\{\alpha_i\}$, $\{\beta_i\}$ and matrix $Q
+      = [ \vec{q_1} | \vec{q_2} | \cdots ]$ }
+%
+    $k \gets 0, \beta_0 \gets 1, \vec{q_0} \gets 0, r_0 \gets \vec{q_1}$ \;
+    \While {$k = 0 \lor \beta_k \ne 0$}
+    {
+      $\vec{q_{k+1}} \gets \dfrac{\vec{r_k}}{\beta_k}$ \;
+      $k \gets k + 1$ \;
+      $\alpha_k \gets \trans{\vec{q_k}}B\vec{q_k}$ \;
+      $\vec{r_k} \gets B\vec{q_k} - \alpha_kq_k - \beta_{k-1}\vec{q_{k-1}}$ \;
+      $\beta_k \gets \norm{\vec{r_k}}_2$ \;
+    }
+%
+    return $(\{\alpha_i\}, \{\beta_i\}, 
+             Q = [ \vec{q_1} | \vec{q_2} | \cdots ])$ \;
+\end{algorithm}
+\hfill
+	\end{block} 
+\end{frame}

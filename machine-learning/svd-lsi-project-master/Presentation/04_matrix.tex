@@ -1,0 +1,44 @@
+\begin{frame}[plain]
+  \frametitle{Matrix Decompositions}
+\begin{table}[]
+\begin{tabular}{|l|l|l|}
+\hline
+{\bf Decomposition}    & {\bf Expression}       & {\bf Components} \\ \hline
+LU Decomposition       & $A = LU$               & \begin{tabular}[c]{@{}l@{}}$L$ is a lower triangular matrix; \\ $U$ is a upper triangular matrix\end{tabular} \\ \hline
+Rank Factorization     & $A = CF$               & \begin{tabular}[c]{@{}l@{}}$C$ is an $m \times r$ full column\\ rank matrix;\\ $F$ is a $r \times n$ full row\\ rank matrix\end{tabular}  \\ \hline
+\begin{tabular}[c]{@{}l@{}}Cholesky \\ Decomposition\end{tabular} & $A = U^{T}U$           & \begin{tabular}[c]{@{}l@{}}$U$ is upper triangular with positive\\ diagonal entries\end{tabular} \\ \hline
+QR Decomposition       & $A = QR$               & \begin{tabular}[c]{@{}l@{}}$Q$ is an orthogonal matrix mxm;\\ $R$ is an upper \\triangular matrix $m \times n$\end{tabular}                        \\ \hline
+Eigendecomposition     & $A = Q \Lambda Q^{-1}$ & \begin{tabular}[c]{@{}l@{}}$D$
+is a diagonal matrix formed \\ from eigenvalues of $A$;\\ $V$ are the corresponding \\eigenvectors\end{tabular} \\ \hline
+\end{tabular}
+\end{table}
+	\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame} [plain]
+\frametitle{SVD Decomposition}
+\begin{block}{}
+$A = U \Sigma V^{T}$
+\begin{itemize}
+  \item $U$ and $V$ are orthogonal matrices
+  \item $\Sigma$ is a diagonal matrix that contain the \textit{singular values} $\sigma_i$ of
+A; $\sigma_1 \geq \sigma_2 \geq ... \geq \sigma_n \geq 0$
+\end{itemize}
+\end{block}
+\begin{block}{}
+In the 20th century, focus was on obtaining efficient algorithms for SVD
+computation
+\begin{itemize}
+  \item Several implementations of SVD solvers
+  \begin{itemize}
+    \item SVDPACK(C)
+    \item SVDLIBC
+    \item LAPACK
+    \item ...
+  \end{itemize}
+  \item Gensim contains the SVD solver that best matches our problem (as far as we could investigate)
+\end{itemize}
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

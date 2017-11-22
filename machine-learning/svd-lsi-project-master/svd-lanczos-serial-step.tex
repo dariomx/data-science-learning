@@ -1,0 +1,131 @@
+\subsection{The Lanczos Tridiagonalization Step}
+
+Golub explains in \cite{golub13} that one of the problems with the
+Power Method, is that it does not take advantage of the previously
+calculated information. During the iterations of the Power Method, say
+until step $k$, we have calculated already the set of vectors
+$K(A,q_0,k) = \{A\vec{q_0},A\vec{q_1},\dots,A\vec{q_k}\}$; still, they
+are not used 
+at all when looking for an estimate of the eigenvector. Such
+limitation is addressed by the Lanczos Process, named after its
+creator in 1950 (\cite{lanczos1950}). The subspace spanned by the
+$K(A,q_0,k)$ is called Krylov Subspace of order $k$ \footnote{The
+  concept itself of Krylov Spaces is thanks for 
+  Krylov and dates back to 1931 (see \cite{krylov1931})}, which is why
+the Lanczos Process is usually cataloged as a Krylov Subspace
+method.  \\
+
+Going back to Lanczos, this subsection will only explain the iterative
+step (called Lanczos Tridiagonalization Step). It works as follows; let us
+suppose that we have an square symmetric matrix $A^{n \times n}$, and
+that we want a few of its biggest eigenvalues (as it is the case in LSI
+applications) \footnote{The Lanczos Process can also calculate a few
+  of the smallest eigenvalues, but we are not interested in such case
+  for LSI applications.}. Each iteration $k$ of the algorithm generates a
+tridiagonal matrix $T_k \in \R{k \times
+  k}$ \footnote{Matrices with the middle, upper and lower
+  diagonals.}, and the whole sequence ${T_k}$ is  progressively 
+approximating the biggest eigenvalues of the original matrix
+$A$. \\
+
+There are several ways of stating the algorithm for the Lanczos
+Tridiagonalization Step, the following is taken from Golub \cite{golub13};
+though it is not the the most numerically stable. That honor
+corresponds to the ones created by Paige
+(\cite{paige71},\cite{paige76}); we preferred Golub's one for our
+exposition, aiming to have an easier introduction to the procedure: 
+
+\begin{algorithm}
+  \label{alg:lanczos-step}
+  \caption{The Lanczos Tridiagonalization Step}
+%
+  \setstretch{1.5}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+    \Input{A unit vector $\vec{q_1} \in \R{n}$ and a symmetric matrix $A^{n
+        \times n}$}
+%
+    \Output{The sequences $\{\alpha_i\}$, $\{\beta_i\}$ and matrix $Q
+      = [ \vec{q_1} | \vec{q_2} | \cdots ]$ }
+%
+    $k \gets 0, \beta_0 \gets 1, \vec{q_0} \gets 0, r_0 \gets \vec{q_1}$ \;
+    \While {$k = 0 \lor \beta_k \ne 0$}
+    {
+      $\vec{q_{k+1}} \gets \dfrac{\vec{r_k}}{B_k}$ \;
+      $k \gets k + 1$ \;
+      $\alpha_k \gets \trans{\vec{q_k}}A\vec{q_k}$ \;
+      $\vec{r_k} \gets A\vec{q_k} - \alpha_kq_k - \beta_{k-1}\vec{q_{k-1}}$ \;
+      $\beta_k \gets \norm{\vec{r_k}}_2$ \;
+    }
+%
+    return $(\{\alpha_i\}, \{\beta_i\}, 
+             Q = [ \vec{q_1} | \vec{q_2} | \cdots ])$ \;
+\end{algorithm}
+\hfill
+
+The \cref{alg:lanczos-step} is essentially applying Gram-Schmidt process,
+but only against the last two vectors. Golub derives the algorithm
+from a relation between tridiagonalization, and the QR factorization of
+the matrix formed by vectors $K(A,q_0,k)$; see \cite{golub13} for
+further details. \\
+
+Golub goes even further in the cited book, and proves the following
+properties about \cref{alg:lanczos-step}. We will omit the theorem
+statement, and just comment directly its results: \\
+
+\begin{itemize}
+  \item The algorithm runs until $k = m = rank(K(A,q_0,k))$. This contrasts 
+    with the unknown number of steps of the Power Method
+    (\cref{alg:power-method}). \\
+
+  \item For $k = 1:m$ we have $AQ_k = Q_kT_k + \vec{r_k}\trans{e_k}$,
+    where $Q = [\vec{q_1} | \cdots | \vec{q_k} ]$ has orthonormal
+    columns that span the Krylov subspace $K(A,\vec{q_1},k)$, and $e_k
+    = I_n(:,k)$ (the $k$ column of the identity matrix). This
+    justifies the orthogonalization step of the algorithm (line 6),
+    which only considers the last two vectors; whether that is enough to
+    guarantee that all the $\vec{q}$\apos{s} will be orthogonal is
+    certainly not evident, and gets proved on the same theorem. \\
+
+  \item The matrix $T_k$ has tridiagonal shape, that is: \\
+    \[
+    \begin{bmatrix}
+      \alpha_1 & \beta_1 & \cdots      & 0          \\
+      \beta_1  & \ddots  & \ddots      & \vdots     \\
+      \vdots   & \ddots  & \ddots      & \beta_{k-1} \\
+      0        & \cdots  & \beta_{k-1} & \alpha_k
+    \end{bmatrix}
+    \]
+    \hfill
+
+    This shape allows us to calculate its eigenvalues with much less
+    effort than for original matrix $A$ (which was the whole
+    motivation on the beginning). There are several options for such
+    calculation, but we will consider only the (implicit) QL Algorithm
+    (see \cite{dubrulle71}), as that is the one used by Berry for his
+    famous routines in the context of LSI (see further
+    subsections). 
+\end{itemize}
+\hfill
+
+In addition to the above properties, which kind of guarantee the
+``correctness'' of the \cref{alg:lanczos-step} (to some extent); Golub
+also cites in \cite{golub13} another theorem that establishes the
+approximation quality of matrix $T_k$ as a function of $k$. This is
+the result that justifies our original claim that the sequence of
+matrices $\{T_k\}$, approximates better the eigenvalues of $A$ as $k$
+increases. \\
+
+Finally, Golub adds in \cite{golub13} that not everything is flakes
+and honey with this 
+algorithm; the orthogonality that we expect on vectors \vec{q}\apos{s}
+is at jeopardy as $\tilde{\beta_k}$, the numerical approximation of
+$\beta_k$, becomes really small; this is because that implies the
+cancellation of $\vec{r_k}$). Main credit of this result goes again to
+Paige (\cite{paige71},\cite{paige76}), and we will come back to 
+it on next subsection, when we show the full Lanczos Algorithm.
+
+
+

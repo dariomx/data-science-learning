@@ -1,0 +1,52 @@
+This is BibTeX, Version 0.99d (TeX Live 2012/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: lsi.aux
+The style file: plain.bst
+Database file #1: lsi.bib
+Warning--I didn't find a database entry for "golub75"
+Warning--empty journal in svdpackc
+Warning--empty journal in svdpack
+Warning--empty journal in rehurek10b
+Warning--empty journal in rehurek10a
+You've used 47 entries,
+            2118 wiz_defined-function locations,
+            764 strings with 10406 characters,
+and the built_in function-call counts, 14678 in all, are:
+= -- 1476
+> -- 618
+< -- 11
++ -- 259
+- -- 200
+* -- 976
+:= -- 2465
+add.period$ -- 143
+call.type$ -- 47
+change.case$ -- 230
+chr.to.int$ -- 0
+cite$ -- 51
+duplicate$ -- 574
+empty$ -- 1171
+format.name$ -- 200
+if$ -- 3045
+int.to.chr$ -- 0
+int.to.str$ -- 47
+missing$ -- 50
+newline$ -- 236
+num.names$ -- 94
+pop$ -- 248
+preamble$ -- 1
+purify$ -- 191
+quote$ -- 0
+skip$ -- 402
+stack$ -- 0
+substring$ -- 944
+swap$ -- 100
+text.length$ -- 11
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 172
+warning$ -- 4
+while$ -- 157
+width$ -- 49
+write$ -- 506
+(There were 5 warnings)

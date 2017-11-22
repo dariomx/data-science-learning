@@ -1,0 +1,21 @@
+\begin{frame}[plain]
+	\frametitle{[Curran02] Thesaurus construction overview}
+	\begin{block}{}
+    Vector-space thesaurus extraction can be separated
+    into two independent processes. The first step extracts 
+    the contexts from raw text and compiles them into a 
+    vector-space statistical description of the contexts 
+    each potential thesaurus term appears in.
+	\end{block} 
+	\begin{block}{}
+    The second step in thesaurus extraction performs
+    clustering or nearest-neighbour analysis to determine which terms
+    are similar based on their context 
+    vectors. For nearest-neighbour measurements
+    we must define a function to judge the similarity between two
+    context vectors (e.g. the cosine measure) 
+    and a function to combine the raw instance frequencies for each
+    context relation into weighted vector 
+    components.
+	\end{block} 
+\end{frame}

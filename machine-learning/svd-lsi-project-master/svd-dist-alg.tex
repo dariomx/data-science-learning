@@ -1,0 +1,118 @@
+\section{The one-pass distributed algorithm}
+
+The essence of the distributed strategy is to achieve almost perfect
+parallelism, by splitting the input matrix into several smaller
+matrices called \emph{jobs}. \\
+
+\[
+A^{m \times n} = 
+\begin{bmatrix}
+A_1^{m \times c_1} \mid A_2^{m \times c_2} \mid \cdots \mid A_k^{m \times c_k}
+\end{bmatrix}
+\suchthat \sum_{i=1}^k c_i = n
+\]
+\\
+
+A subset of these smaller matrices or \emph{jobs} is assigned to each
+node in the cluster, depending on their capabilities; the
+objective is to assign matrices that fit into the node's RAM
+memory. Each node will calculate the SVD factorization of the
+submatrices assigned, but merging those results into a single
+SVD approximation that covers all the input data it received. At the
+end, a global merge step across all the nodes is performed, giving the
+global SVD approximation for original matrix $A$. The
+\cref{alg:svd-dist} describes the overall distributed algorithm: \\
+
+\begin{algorithm}
+  \label{alg:svd-dist}
+  \caption{Distributed-SVD: Distributed SVD for LSI (global)}
+%
+  \setstretch{1.35}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+    \Input{Truncation factor $k$, queue of jobs $A= [A_1, A_2, \dots ]$}
+%
+    \Output{Matrices $U^{m \times k}$ and $\Sigma^{k \times k}$, 
+      from the SVD decomp. of $A$}
+%
+    \For {\textbf{all} (node $i$ in cluster)}
+    {
+      $B_i \gets \text{subset of the queue of jobs } [A_1,A_2,\dots]$ \;
+%
+      $P_i = (U_i,\Sigma_i) \gets \func{SVD-Node}(k,B_i)$ \;
+    }
+    $(U,\Sigma) \gets \func{Reduce}(\func{Merge-SVD},[P_1,P_2,\dots])$ \;
+%
+    return $(U, \Sigma)$ \;
+\end{algorithm}
+\hfill
+
+The first important detail from the algorithm just shown, is that we
+are not calculating the matrix $V$ from the SVD factorization, how
+come! Such detail is explained at the end of the last section. For the
+moment, let us just say that such matrix is not required for our
+purposes. \\
+
+We can also observe the map-reduce pattern in this algorithm, with the map
+part being the iteration done over $p$ nodes (in parallel); and the
+reduce part being the final merge of those partial results. The
+\cref{alg:svd-dist-node} describes the part done inside each node.
+
+\begin{algorithm}
+  \label{alg:svd-dist-node}
+  \caption{SVD-Node: Distributed SVD for LSI (node)}
+%
+  \setstretch{1.35}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+  \Input{Truncation factor $k$, queue of jobs $A_1,A_2,\dots$}
+%
+  \Output{Matrices $U^{m \times k}$ and $\Sigma^{k
+        \times k}$, from the SVD  of $[A_1,A_2,\dots]$}
+%
+  $P = (U,\Sigma) \gets 0^{m \times k} 0^{k \times k}$ \;
+%
+  \For {each job $A_i$}
+  {
+    $\prim{P} = (\prim{U},\prim{\Sigma}) \gets \func{Basecase-SVD}(k,A_i)$ \;
+%
+    $P = (U^{m \times k},\Sigma^{k \times k}) \gets \func{Merge-SVD}(k, P, \prim{P})$ \;
+  }
+%
+  return $(U,\Sigma)$ \;
+\end{algorithm}
+\hfill
+
+It is important to realize that the iteration in this
+\cref{alg:svd-dist-node} is done serially, but that the procedure
+$\func{Basecase-SVD}$ that resolves the SVD of a
+matrix that fits in memory (base case), internally may exploit the
+multicore or vectorial capabilities of the node computer. This
+procedure serves as a black box SVD calculator, and \Rehurek mentions
+at least two algorithms which can be plugged on its place: \\
+
+\begin{enumerate}
+\item The Lanczos algorithm as implemented by SVDLIBC (\cite{svdlibc}),
+  which in turn is based on SVDPACKC written by Berry et al
+  (\cite{svdpackc}), which in turn is based on its Fortran77
+  predecessor SVDPACK (\cite{svdpack}). All of them  ultimately based
+  on seminal paper by  Berry \cite{berry92} (which in turn comes from
+  his PhD thesis \cite{berry91}). \\
+\item A custom stochastic algorithm based on the work of Halko et al
+  (see \cite{halko11}).
+\end{enumerate}
+\hfill
+
+For the scope of this project, we considered appropriate to focus only
+on the Lanczos based algorithm; as that is essentially what we
+described in the previous chapter. In that sense, the work of \Rehurek
+is interesting because by using the divide and conquer strategy for
+the SVD problem, he is leveraging on the decades of research and
+numerical accuracy of the work done by Berry et al. At the same time,
+his key contribution becomes the procedure $\func{Merge-SVD}$, which
+we will describe in further sections. \\
+

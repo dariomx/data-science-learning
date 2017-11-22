@@ -1,0 +1,18 @@
+\begin{frame}[plain]
+	\frametitle{Is SVD problem well conditioned?}
+	\begin{block}{A problem is well conditioned if ... }
+    $x \simeq (x+\delta) \implies f(x) \simeq f(x + \delta)$
+	\end{block}   
+	\begin{block}{Weyl's Theorem}
+    $\abs{\tilde{\sigma_i} - \sigma_i} \le \norm{E}_2 \ds{\suchthat}
+    \tilde{A} = A + E$
+	\end{block}
+	\begin{block}{Wedin's Theorem}
+    The singular vectors subproblem is not well conditioned in theory,
+    but it has bounds.
+	\end{block}
+	\begin{block}{In practice we are fine}
+    We do not need singular vectors by themselves ($\vec{v} =
+    \inv{\Sigma}\trans{U}\vec{x}$).
+	\end{block}
+\end{frame}

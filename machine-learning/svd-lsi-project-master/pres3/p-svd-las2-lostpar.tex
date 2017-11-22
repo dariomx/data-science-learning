@@ -1,0 +1,13 @@
+\begin{frame}[plain]
+	\frametitle{SVDPACK $\implies$ SVDLIBC: lost parallelism}
+	\begin{block}{}
+    \begin{itemize}
+      \item Berry's SVDPACK LAS2: SPMXV (BLAS?), IMTQL2 (EISPACK)
+      \item Berry ports to SVDPACKC: opa/opb (user), IMTQL2 (serial!)
+      \item Rohde new skin of SVDLIBC: opa/opb (serial!),
+        IMTQL2 (serial!).
+      \item Radim's python wrapper SPARSESVD : same all
+      \item Radim's GenSim uses a serial LAS2 routine!
+    \end{itemize}
+	\end{block}
+\end{frame}

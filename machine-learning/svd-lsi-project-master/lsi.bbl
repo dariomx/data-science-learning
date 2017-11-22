@@ -1,0 +1,265 @@
+\begin{thebibliography}{10}
+
+\bibitem{lapack}
+Edward Anderson, Zhaojun Bai, Christian Bischof, Susan Blackford, James Demmel,
+  Jack Dongarra, Jeremy Du~Croz, Anne Greenbaum, S~Hammerling, Alan McKenney,
+  et~al.
+\newblock {\em LAPACK Users' guide}, volume~9.
+\newblock Siam, 1999.
+
+\bibitem{svdpackc}
+Michael Berry, Theresa Do, Gavin O'Brien, Vijay Krishna, and Sowmini Varadhan.
+\newblock Svdpackc (version 1.0) user's guide1.
+\newblock 1993.
+
+\bibitem{berry92}
+Michael~W Berry.
+\newblock Large-scale sparse singular value computations.
+\newblock {\em International Journal of Supercomputer Applications},
+  6(1):13--49, 1992.
+
+\bibitem{svdpack}
+Michael~W Berry.
+\newblock Svdpack: A fortran-77 software library for the sparse singular value
+  decomposition.
+\newblock 1992.
+
+\bibitem{berry95}
+Michael~W Berry, Susan~T Dumais, and Gavin~W O'Brien.
+\newblock Using linear algebra for intelligent information retrieval.
+\newblock {\em SIAM review}, 37(4):573--595, 1995.
+
+\bibitem{berry91}
+Michael~Waitsel Berry.
+\newblock {\em Multiprocessor sparse SVD algorithms and applications}.
+\newblock PhD thesis, Citeseer, 1991.
+
+\bibitem{blank89}
+SJ~Blank, Nishan Krikorian, and David Spring.
+\newblock A geometrically inspired proof of the singular value decomposition.
+\newblock {\em American Mathematical Monthly}, 96(3):238--239, 1989.
+
+\bibitem{linpack}
+Jack~J Dongarra, James~R Bunch, Cleve~B Moler, and Gilbert~W Stewart.
+\newblock {\em LINPACK users' guide}, volume~8.
+\newblock Siam, 1979.
+
+\bibitem{dubrulle71}
+A~Dubrulle, RS~Martin, and JH~Wilkinson.
+\newblock The implicit ql algorithm.
+\newblock In {\em Linear algebra}, pages 241--248. Springer, 1971.
+
+\bibitem{eckart36}
+Carl Eckart and Gale Young.
+\newblock The approximation of one matrix by another of lower rank.
+\newblock {\em Psychometrika}, 1(3):211--218, 1936.
+
+\bibitem{golub65}
+Gene Golub and William Kahan.
+\newblock Calculating the singular values and pseudo-inverse of a matrix.
+\newblock {\em Journal of the Society for Industrial \& Applied Mathematics,
+  Series B: Numerical Analysis}, 2(2):205--224, 1965.
+
+\bibitem{golub70}
+Gene~H Golub and Christian Reinsch.
+\newblock Singular value decomposition and least squares solutions.
+\newblock {\em Numerische mathematik}, 14(5):403--420, 1970.
+
+\bibitem{golub00}
+Gene~H Golub and Henk~A Van~der Vorst.
+\newblock Eigenvalue computation in the 20th century.
+\newblock {\em Journal of Computational and Applied Mathematics},
+  123(1):35--65, 2000.
+
+\bibitem{golub13}
+Gene~H Golub and Charles~F Van~Loan.
+\newblock {\em Matrix computations}.
+\newblock Johns Hopkins University Press, 4th edition, 2012.
+
+\bibitem{halko11}
+Nathan Halko, Per-Gunnar Martinsson, and Joel~A Tropp.
+\newblock Finding structure with randomness: Probabilistic algorithms for
+  constructing approximate matrix decompositions.
+\newblock {\em SIAM review}, 53(2):217--288, 2011.
+
+\bibitem{hall00}
+Peter Hall, David Marshall, and Ralph Martin.
+\newblock Merging and splitting eigenspace models.
+\newblock {\em Pattern Analysis and Machine Intelligence, IEEE Transactions
+  on}, 22(9):1042--1049, 2000.
+
+\bibitem{hall02}
+Peter Hall, David Marshall, and Ralph Martin.
+\newblock Adding and subtracting eigenspaces with eigenvalue decomposition and
+  singular value decomposition.
+\newblock {\em Image and Vision Computing}, 20(13):1009--1016, 2002.
+
+\bibitem{hernandez07}
+V~Hernandez, JE~Roman, A~Tomas, and V~Vidal.
+\newblock Restarted lanczos bidiagonalization for the svd in slepc, 2007.
+
+\bibitem{jia01}
+Zhongxiao Jia and GW~Stewart.
+\newblock An analysis of the rayleigh--ritz method for approximating
+  eigenspaces.
+\newblock {\em Mathematics of Computation}, 70(234):637--647, 2001.
+
+\bibitem{kalman96}
+Dan Kalman.
+\newblock A singularly valuable decomposition: the svd of a matrix.
+\newblock {\em The college mathematics journal}, 27(1):2--23, 1996.
+
+\bibitem{sse}
+Alex Klimovitski.
+\newblock Using sse and sse2: Misconceptions and reality.
+\newblock {\em Intel developer update magazine}, pages 3--8, 2001.
+
+\bibitem{krylov1931}
+AN~Krylov.
+\newblock On the numerical solution of the equation by which in technical
+  questions frequencies of small oscillations of material systems are
+  determined.
+\newblock {\em Izvestija AN SSSR (News of Academy of Sciences of the USSR),
+  Otdel. mat. i estest. nauk}, 7(4):491--539, 1931.
+
+\bibitem{lanczos1950}
+Cornelius Lanczos.
+\newblock {\em An iteration method for the solution of the eigenvalue problem
+  of linear differential and integral operators}.
+\newblock United States Governm. Press Office, 1950.
+
+\bibitem{lang04}
+Serge Lang.
+\newblock {\em Linear Algebra}.
+\newblock Springer-Verlag, New York, 3rd edition, 2004.
+
+\bibitem{blas}
+Chuck~L Lawson, Richard~J. Hanson, David~R Kincaid, and Fred~T. Krogh.
+\newblock Basic linear algebra subprograms for fortran usage.
+\newblock {\em ACM Transactions on Mathematical Software (TOMS)},
+  5(3):308--323, 1979.
+
+\bibitem{leissa05}
+Arthur~W Leissa.
+\newblock The historical bases of the rayleigh and ritz methods.
+\newblock {\em Journal of Sound and Vibration}, 287(4):961--978, 2005.
+
+\bibitem{muntz1913}
+CL~Muntz.
+\newblock Solution direct de l’equation seculaire et de quelques problems
+  analogues.
+\newblock {\em Comptus Rendus de l’Academie des Sciences}, 156:43--46, 1913.
+
+\bibitem{numpy}
+Travis~E Oliphant.
+\newblock {\em A guide to NumPy}, volume~1.
+\newblock Trelgol Publishing USA, 2006.
+
+\bibitem{paige76}
+Christopher~C Paige.
+\newblock Error analysis of the lanczos algorithm for tridiagonalizing a
+  symmetric matrix.
+\newblock {\em IMA Journal of Applied Mathematics}, 18(3):341--349, 1976.
+
+\bibitem{paige71}
+Christopher~Conway Paige.
+\newblock {\em The computation of eigenvalues and eigenvectors of very large
+  sparse matrices.}
+\newblock PhD thesis, University of London, 1971.
+
+\bibitem{parlett79}
+Beresford~N Parlett and David~S Scott.
+\newblock The lanczos algorithm with selective orthogonalization.
+\newblock {\em Mathematics of computation}, 33(145):217--238, 1979.
+
+\bibitem{plassman05}
+Gerald~E Plassman.
+\newblock A survey of singular value decomposition methods and performance
+  comparison of some available serial codes.
+\newblock {\em NASA Technical Report CR-2005-213500}, 2005.
+
+\bibitem{rehurek11a}
+RNDr Radim~Rehurek.
+\newblock {\em SCALABILITY OF SEMANTIC ANALYSIS IN NATURAL LANGUAGE
+  PROCESSING}.
+\newblock PhD thesis, Masaryk University, 2011.
+
+\bibitem{gensim}
+R~{\v{R}}eh{u}{\v{r}}ek and P~Sojka.
+\newblock Gensim--python framework for vector space modelling.
+\newblock {\em NLP Centre, Faculty of Informatics, Masaryk University, Brno,
+  Czech Republic}, 2011.
+
+\bibitem{rehurek11b}
+Radim {\v{R}}eh{u}{\v{r}}ek.
+\newblock Subspace tracking for latent semantic analysis.
+\newblock In {\em Advances in Information Retrieval}, pages 289--300. Springer,
+  2011.
+
+\bibitem{rehurek10b}
+Radim {\v{R}}eh{u}{\v{r}}ek et~al.
+\newblock Fast and faster: A comparison of two streamed matrix decomposition
+  algorithms.
+\newblock 2010.
+
+\bibitem{rehurek10a}
+Radim {\v{R}}eh{u}{\v{r}}ek et~al.
+\newblock Speeding up latent semantic analysis: A streamed distributed
+  algorithm for svd updates.
+\newblock 2010.
+
+\bibitem{svdlibc}
+Doug Rohde.
+\newblock Svdlibc, 2007.
+
+\bibitem{simon84}
+Horst~D Simon.
+\newblock Analysis of the symmetric lanczos algorithm with reorthogonalization
+  methods.
+\newblock {\em Linear algebra and its applications}, 61:101--131, 1984.
+
+\bibitem{eispack}
+Brian~T Smith, James~M. Boyle, BS~Garbow, Y~Ikebe, VC~Klema, and CB~Moler.
+\newblock {\em Matrix eigensystem routines-EISPACK guide}, volume~6.
+\newblock Springer, 2013.
+
+\bibitem{stewart93}
+Gilbert~W Stewart.
+\newblock On the early history of the singular value decomposition.
+\newblock {\em SIAM review}, 35(4):551--566, 1993.
+
+\bibitem{strang88}
+Gilbert Strang.
+\newblock {\em Linear algebra and its applications}.
+\newblock Saunders, 3rd edition, 1988.
+
+\bibitem{strang93}
+Gilbert Strang.
+\newblock The fundamental theorem of linear algebra.
+\newblock {\em American Mathematical Monthly}, pages 848--855, 1993.
+
+\bibitem{atlas}
+R~Clint Whaley.
+\newblock Atlas (automatically tuned linear algebra software).
+\newblock In {\em Encyclopedia of Parallel Computing}, pages 95--101. Springer,
+  2011.
+
+\bibitem{wilf81}
+Herbert~S Wilf.
+\newblock {An algorithm-inspired proof of the spectral theorem in $E^n$}.
+\newblock {\em American Mathematical Monthly}, pages 49--50, 1981.
+
+\bibitem{zha98}
+Hongyuan Zha, Osni Marques, and Horst~D Simon.
+\newblock Large-scale svd and subspace-based methods for information retrieval.
+\newblock In {\em Solving Irregularly Structured Problems in Parallel}, pages
+  29--42. Springer, 1998.
+
+\bibitem{zha00}
+Hongyuan Zha and Zhenyue Zhang.
+\newblock Matrices with low-rank-plus-shift structure: Partial svd and latent
+  semantic indexing.
+\newblock {\em SIAM Journal on Matrix Analysis and Applications},
+  21(2):522--536, 2000.
+
+\end{thebibliography}

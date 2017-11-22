@@ -1,0 +1,76 @@
+\section{Accuracy of the merge algorithm}
+
+The overall numerical accuracy of any algorithm, is of crucial
+relevance in the area of Numerical Analysis; in particular in the
+subarea we care about in this project (Numerical Linear
+Algebra). \Rehurek offers detailed and promising accuracy comparisons
+between his proposal and several other available implementations,
+though he does that mainly for the serial executions (single node) of
+small/medium corpus sizes (not the Wikipedia experiment described in
+previous section). Another pending task to verify the accuracy against
+a golden standard, could be to perform experiments on a supercomputer
+with enough RAM to hold the large corpus matrix; using an standard
+SVD software like \cite{svdlibc}. The authors of these lines have added
+such pending task, to the TODO list for further stages of
+this project. \\
+
+Despite of the above, an interesting analysis about the effect of
+nested truncation that \cref{alg:svd-dist} introduces, is exposed in
+\Rehurek Phd thesis \cite{rehurek11a}. Citing the work of Zha et al
+(\cite{zha00}), he remarks that his distributed SVD algorithm meets the conditions to
+be an stable algorithm (on the numerical sense), though no longer
+exact. This should not surprise us, as the almost perfect parallelism
+achieved can not come without a price: every merge of two SVD
+factorizations, as produced by \cref{alg:merge-svd}, introduces some
+error, in the sense that the following equality does not hold: \\
+
+\begin{equation}
+\label{eq:merge-svd-eq}
+\func{SVD_k}(\begin{bmatrix}A_1 \mid A_2\end{bmatrix}) =
+\func{SVD_k}(\begin{bmatrix}\func{SVD_k}(A_1) \mid \func{SVD_k}(A_2)\end{bmatrix})
+\end{equation}
+\hfill
+
+In other words, calculating truncated SVD against the original input
+matrices $A_1$ and $A_2$ (concatenated by columns), is not the same as
+calculating the same over their truncated $SVD_k$ approximations. Let
+us recall that the matrix produced by $SVD_k(A)$ is just an approximation
+of original matrix $A$. \\
+
+The precision lost by accepting as inputs rank-$k$ approximations,
+instead of the original matrices, is not that bad though; it is shown in
+\cite{zha00} and reused by Rehurek in \cite{rehurek11a}, that the
+typical matrix $A$ that emerges from Natural Language 
+Applications like LSI, ``do indeed possess the necessary structure and
+that in this case, a rank-$k$ approximation of A can be expressed as a
+combination of rank-k approximations of its submatrices without a
+serious loss of precision''. \\
+
+The above quote means, that the equality \cref{eq:merge-svd-eq} can
+be considered to hold in practice. In strict theory we shall replace the
+equality sign by an approximation sign though, as the equality sign
+can be stated only on the idealistic case of exact arithmetic. Hence,
+we can claim that: \\
+
+\begin{equation}
+\label{eq:merge-svd-app}
+\func{SVD_k}(\begin{bmatrix}A_1 \mid A_2\end{bmatrix}) \approx
+\func{SVD_k}(\begin{bmatrix}\func{SVD_k}(A_1) \mid \func{SVD_k}(A_2)\end{bmatrix})
+\end{equation}
+\hfill
+
+This is in part, because the $SVD_k$ factorization of a matrix $A$ is
+not actually just an approximation (as we claimed paragraphs above),
+it is  ``the best'' approximation by a matrix of rank $k$, per the
+Eckart-Young Theorem \cite{eckart36}. The \cref{eq:merge-svd-app},
+derived from the work of \cite{zha00}, can be considered the angular
+stone for the divide-and-conquer strategy of
+the distributed \cref{alg:svd-dist}. Without it, we would not know if
+it is valid to use the $\func{SVD}_k$ calculation itself, as a way of
+combining two already calculated $\func{SVD}_k$ factorizations. A quite
+interesting research path for this project, could be to seek for other
+alternatives for doing the merge; or, to confirm that the scheme
+proposed by \Rehurek is the optimal way of merging two truncated SVD
+factorizations. 
+
+

@@ -1,0 +1,40 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usetheme{Kalgan}
+\setbeamercovered{highly dynamic}
+\setbeamersize{text margin left=5pt}
+\usepackage{listings}
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=false
+}
+\usepackage{graphicx}
+\graphicspath{{../res/}}
+\DeclareGraphicsExtensions{.pdf,.jpg,.png}
+\usepackage{animate}
+
+\input{usepkg.tex}
+\newcommand{\andspc}{\;\;\land\;\;}
+\input{cmds.tex}
+
+\title{kk}
+\author{Bahena, Zavaleta}%
+\institute{CINVESTAV - ORACLE}
+\date{June 2015}
+
+\begin{document}
+	\begin{frame}[plain]
+	  \titlepage
+	\end{frame}
+  \input{p-svd-intuit-geoin.tex}
+  \input{p-svd-proof-geo.tex}
+  \input{p-svd-eigen.tex}
+  \input{p-svd-wellcond.tex}
+  \input{p-svd-lanczos-alg.tex}
+  \input{p-svd-lanczos-step.tex}
+  \input{p-svd-lanczos-trid.tex}
+  \input{p-svd-lanczos-real.tex}
+  \input{p-svd-lanczos-prof.tex}
+  \input{p-svd-las2-lostpar.tex}
+\end{document}

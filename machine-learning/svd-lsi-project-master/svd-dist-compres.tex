@@ -1,0 +1,113 @@
+\section{Complexity and performance}
+
+\subsection{Time complexity of the Merge-SVD algorithm}
+The overall complexity of the \cref{alg:svd-dist} can be expressed in
+terms of functions $\func{Basecase-SVD}$ and $\func{Merge-SVD}$; but
+given the former is seen as a black box over which we have little
+control, and that the main contribution of \Rehurek (from SVD 
+perspective), is the \cref{alg:merge-svd}, we focus on the complexity
+of that $\func{Merge-SVD}$ alone. \\
+
+Let us review the cost of its main steps of
+\cref{alg:merge-svd} individually, as a way to arriving to the the overall
+complexity (we will not consider the possible parallelization or
+vectorization of the basic kernel operations \footnote{A ``kernel'' in
+the context of Numerical Linear Algebra, is a basic routine which is
+heavily used by higher level algorithms; hence, its performance is
+crucial and they are heavily optimized.}, which is usually
+achieved by using standard libraries like BLAS or LAPACK): 
+
+\begin{itemize}
+  \item The matrix multiplication that produces $Z$ in line $1$, is
+    done against matrices $\trans{U_1}$ (of dimensions $k_1 \times m$)
+    and matrix $U_2$ (of dimensions $m \times k_2$); hence it has a
+      complexity \bigO{m k_1 k_2}. \\ 
+
+  \item The second step is dominated by the QR calculation; according
+    to Golub \cite{golub13}, the complexity of a QR factorization
+    based on the Gram-Schmidt process for a matrix $A^{m \times n}$,
+    is \bigO{m n^2}. Applying that result to the particular case of
+    line $2$, give us a complexity of \bigO{m k_2^2}. \\
+
+   \item It seems hard to
+     find reported complexities for the SVD algorithms, in the
+     available literature; \Rehurek mentions that the complexity of
+     the full SVD calculation from line $3$ is
+     \bigO{(k_1+k_2)^3}\footnote{We could find at least one reference
+       that also mentions this complexity, see
+       \cite{plassman05}.}. Hence, given that the truncation factors  
+     $k_1$ and $k_2$ are usually a few hundreds in the context of LSI;
+     the cost of this step can be neglected. \\
+
+   \item Finally, the complexity of the matrix operations in the last step 
+     (focusing on the products only), is \bigO{mkk_1 + mkk_2}. 
+\end{itemize}
+\hfill
+
+In practice the truncation factors do not vary much in LSI
+applications, thus, we can simplify further. Let us assume that $k
+\approx k_1 \approx k_2$, then the reported complexities in the list
+above become: \bigO{m k^2}, \bigO{m k^2}, \bigO{k^3}, \bigO{m
+  k^2}. Given that the number of terms $m$ will be much bigger than
+the truncation factor $k$ (hundred of thousands, vs a few hundreds);
+we can conclude that the overall time complexity is \bigO{m k^2}. \\
+
+Due time constraints we did not enter into detailed memory complexity
+analysis of the algorithm, but is part of our todo list (for the case
+that this project evolves into a full thesis). 
+
+\subsection{Performance with a large scale corpus}
+
+\Rehurek used 3 different corpus to test his distributed SVD
+algorithm, in the context of LSI. We focused only on the large corpus,
+which was the English Wikipedia. By that time, it contained $3.2$
+million documents; where 100,000 terms were chosen after removing the
+stop words. That resulted in an sparse matrix of dimensions 
+$100,000 \times 3,199,665$, with $0.5$Gb of non zero entries. Such
+matrix can fit in memory of a modern personal computer, but as
+explained earlier, the main objective of using the distributed
+algorithm is to scale in time. The truncation factor $k$ was set to
+$400$ during this experiment. \\
+
+On his Phd thesis, \Rehurek reports the following wall times of the
+distributed \cref{alg:svd-dist}, running on a single computer and on a
+cluster: \\
+
+\begin{itemize}
+\item $8.5$ hours on a dual-core 2.53GHz MacBook Pro with 4GB RAM and
+vecLib, a fast BLAS (\cite{blas})/ LAPACK (\cite{lapack}) library
+provided by the vendor. \\ 
+
+\item $2$ hours $23$ minutes on a cluster of four dual-core 2GHz Intel
+  Xeons, each with 4GB of RAM, which share the same Ethernet segment
+  and communicate via TCP/IP. These machines did not have any
+  optimized BLAS library installed. 
+\end{itemize}
+\hfill
+
+The above numbers suggest what we expected: given that the
+parallelization achieved by the distributed algorithm is almost
+perfect (only communication needed is on the final merge), the scaling
+in time is basically linear with respect to the number of computing
+nodes. \\
+
+The \href{https://radimrehurek.com/gensim/dist_lsi.html}{gensim page}
+(see \cite{gensim}) has a more up to date
+experiment, which reports $5$ hours 25 minutes for a single machine;
+and $1$ hour with 41 minutes for a cluster with 4 nodes (this time,
+the cluster nodes got ATLAS installed, an open source BLAS/LAPACK
+implementation (see \cite{atlas}). \\
+
+\Rehurek does an additional comparison for the execution on a single
+machine, by contrasting with a custom implementation of the SVD
+algorithm published in \cite{zha98}, named as ZMS in his Phd
+thesis. The ZMS algorithm took 109 hours, which brutally contrast with
+the 2 hours 23 minutes mentioned above for the \cref{alg:svd-dist}. A
+probably more fair comparison, would be against the SVD algorithm
+implemented by SLEPc (\cite{hernandez07}); thought this opensource
+implementation does not target specifically the LSI problem, it claims
+to be distributed and highly scalable. Other comparisons with more
+opensource implementations are possible: together, along with
+reproducing the results published by \Rehurek with more nodes in the
+cluster, are planned to be performed in a further stage of this
+project. 

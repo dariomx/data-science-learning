@@ -1,0 +1,100 @@
+\subsection{The Power Method}
+
+According to Golub \cite{golub00}, quoting Householder, the power
+method has its origin at the work of Müntz in 1913
+\cite{muntz1913}. The method is the simplest algorithm for solving the
+eigenproblem; it basically consists in picking carefully a vector,
+and then apply the matrix $A$ iteratively until it converges to an
+eigenvector. And not to any eigenvector, but precisely to the one with
+largest eigenvalue (in absolute value). The following pseudocode is
+taken from Golub \cite{golub13}: 
+
+\begin{algorithm}
+  \label{alg:power-method}
+  \caption{The Power Method}
+%
+  \setstretch{1.5}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+    \Input{A unit vector $\vec{q_0} \in \R{n}$ and a symmetric matrix $A^{n
+        \times n}$}
+%
+    \Output{The tuple $(\lambda_k,\vec{q_k})$ which is expected to
+      approximate an eigenpair $(\lambda,\vec{q})$ of $A$}
+%
+    \For {$i = 1,2,\dots,k$}
+    {
+      $\vec{z_k} \gets A \vec{q_{k-1}}$ \;
+      $\vec{q_k} \gets \dfrac{\vec{z_k}}{\norm{\vec{z_k}}_2}$ \;
+      $\lambda_k \gets \trans{\vec{q_k}} A \vec{q_k}$ \;
+    }
+%
+    return $(\lambda_k, \vec{q_k})$ \;
+\end{algorithm}
+\hfill
+
+One immediate trick that is detected, is that we are not giving a
+precise value for $k$, the number of iterations; this is because we do
+not really know how many in advance, though we know how ``fast'' we
+can reach convergence, more about this in a minute. Though the
+algorithm looks trivial, a powerful theorem justifies why it
+works. Golub mentions the  conditions which are required for its
+convergence: the 
+maximum eigenvalue of $A$ must be unique (no repetition), and the 
+initial vector $q_0$ is not ``deficient''  (its component on the
+direction of the eigenvector with maximum value must not be zero). A
+proof of convergence/correctness can be consulted in \cite{golub13}. \\\
+
+Golub also mentions the computable error bounds of this method.
+The real eigenvalue and eigenvectors of $A$ will satisfy the equation
+below: 
+
+\[
+A \vec{q} = \lambda \vec{q}
+\]
+\hfill
+
+But accepting the fact that a computer will not product exactly the
+eigenvalue nor the eigenvector, we can at least see how close we are
+in meeting above condition. That is, we can calculate the error $\delta$: 
+
+\[
+\norm{A \vec{q_k} - \lambda_k \vec{q_k}}_2 = \delta
+\]
+\hfill
+
+Golub shows that there is an eigenvalue $\lambda$ that satisfies
+$\abs{\lambda_k - \lambda} \le \sqrt{2}\delta$; which is a way to tell
+that we can really approximate an actual eigenvalue, as long as we are
+capable of reproducing its defining property with good accuracy (which
+in turn, will depend on how many iterations we make). \\
+
+Alright, so we know how to calculate one eigenpair; why not
+calculating them all? We may be tempted now to recall the geometric
+proof of SVD (see \cref{cha:svd-theory}), and consider the following
+procedure for finding all the eigenpairs (assuming preconditions met):
+
+\begin{enumerate}
+\item Pick carefully initial vector. 
+\item Apply \cref{alg:power-method} to find the first
+  eigenpair. 
+\item Obtain the hyperplane that is orthogonal to the first
+  eigenvector found, and repeat recursively the procedure until
+  we have all the desired eigenpairs\footnote{The third step is
+    usually called ``deflation'' (see \cite{golub13}), when mentioned
+    in the context of the matrix, as it is reduced to dimensions $(n-1)
+    \times (n-1)$.}.
+\end{enumerate}
+\hfill
+
+The problem with this procedure, also exposed by Golub in his proof of
+correctness, is that the rate of convergence depends on
+$\abs{\frac{\lambda_2}{\lambda_1}}^k$; where $\lambda_2$ is the second
+largest eigenvalue in absolute value. Thus, unless there is a
+considerable gap between first and second largest eigenvalues of $A$,
+the Power Method will converge quite slowly. That makes it unsuitable
+for practical purposes, at least in the standalone version we just
+presented. Further sections will show how it can evolve to overcome
+this limitation. 

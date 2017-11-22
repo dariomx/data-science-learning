@@ -1,0 +1,175 @@
+\subsection{Algebraic proof (using Spectral Theorem)}
+
+The proof in this section relies on the Spectral Theorem, which says
+that we can diagnonalize a symmetric matrix. Instead of jumping right
+away to the proof of SVD with such heavy machinery, we prefer a
+gradual approach consisting of the following steps: \\
+
+\begin{itemize}
+\item Emphasize that the main task of SVD factorization, is to find a
+  basis for \R{n} whose orthogonality is preserved under $A$.
+\item Introduce Fundamental Theorem of Linear Algebra along the four
+  subspaces related to an arbitrary matrix 
+  $A$.
+\item Motivated by the discussion about the four subspaces, bring to the
+  picture the symmetric matrix $\trans{A}A$ (aka the gramian), and
+  state the properties we will need for the SVD proof.
+\item The symmetric nature of $\trans{A} A$, will justify the
+  usage of the Spectral Theorem; which we proceed to prove.
+\item Finally, we  prove SVD \cref{thm:SVD} itself using the Spectral
+  Theorem as the main tool, but we also use  the auxiliary theorems
+  stated along the way.
+\end{itemize}
+\hfill
+
+\input{svd-proof-spec-fact.tex}
+\input{svd-proof-spec-fund.tex}
+\input{svd-proof-spec-gram.tex}
+\input{svd-proof-spec-spec.tex}
+
+\subsubsection{The spectral proof of SVD}
+
+We are now all set to prove the SVD theorem, and actually, we do not
+need to prove the full version stated in \cref{thm:SVD},
+because we have worked out the factorization part with theorems
+\cref{thm:SVD1} and \cref{thm:SVD2}. Those theorems started from the
+assumption, that there exist two orthonormal bases such that $A\vec{v_i} =
+\sigma_i\vec{u_i}$; what remains to prove then, is the existence of
+those bases. \\
+
+\begin{theorem}[SVD Part 3: existence of the bases]
+\label{thm:SVD3}
+Let $A$ be a real matrix of $m \times n$ with rank $r$ $\implies$ there exist
+orthonormal basis $\{\vec{v_1},\vec{v_2},\dots,\vec{v_n}\}$ and
+$\{\vec{u_1},\vec{u_2},\dots,\vec{u_m}\}$, for \R{n} and \R{m}
+respectively; along with positive real values $\sigma_1 \ge \sigma_2 \ge \cdots
+\sigma_r$, such that: 
+
+\[
+A\vec{v_i} = \sigma_i\vec{u_i}
+\]
+\end{theorem}
+\hfill
+
+\begin{proof}
+We know from previous sections, that
+the key is to find first the 
+basis for \R{n}, such that its orthogonality is preserved through
+$A$ (this interesting approach, and most if this particular proof, is taken from
+Kalman \cite{kalman96}). \\
+
+Per the Fundamental
+Theorem of Linear Algebra, the symmetric 
+matrix $\trans{A}A$ came to 
+the picture; and here comes the magical step: it turns out, that the
+eigenvectors of such matrix (whose existence is guaranteed by the
+Spectral Theorem we just proved), are precisely the orthonormal basis
+$\{\vec{v_1},\vec{v_2},\dots,\vec{v_n}\}$ that we are looking for. Let
+us verify that is actually the case, that is, that $A$ preserves the
+orthogonality of the eigenvectors of $\trans{A}A$. \\
+
+Let \vec{v_i} and \vec{v_j} be eigenvectors of $\trans{A}A$, and
+$\lambda_j$ the eigenvalue of $\vec{v_j}$, then: \\
+
+\[
+(A\vec{v_i}) \cdot (A\vec{v_j}) = 
+\trans{(A\vec{v_i})}(A\vec{v_j}) = 
+\trans{\vec{v_i}} (\trans{A} A\vec{v_j}) = 
+\trans{\vec{v_i}} ( \lambda_j \vec{v_j} ) = 
+\lambda_j \vec{v_i} \cdot \vec{v_j}
+\]
+\hfill
+
+The above derivation tells us that the orthogonality of the images of
+the eigenvectors, named $A\vec{v_i}$ and $A\vec{v_j}$, totally depends of the
+orthogonality of the pre-images \vec{v_i} and \vec{v_j}. Another way of
+saying that, given that the two eigenvectors were picked arbitrarily,
+is that the orthogonality of the eigenvectors of $\trans{A}A$ is
+preserved through $A$. This is exactly the basis we were looking for!
+\\ 
+
+The real work is to find the the basis
+$\{\vec{v_1},\vec{v_2},\dots,\vec{v_n}\}$ in \R{n}, as the basis in \R{m} is
+simply calculated to meet the requirement that $A\vec{v_i} =
+\sigma_i\vec{u_i}$. When proving that orthogonality of the
+\vec{v}\apos{s} is preserved, we came up with the following identity: \\
+
+\[
+(A\vec{v_i}) \cdot (A\vec{v_j}) =  \lambda_j \vec{v_i} \cdot \vec{v_j}
+\]
+\hfill
+
+The particular case of $i = j$, will give us the following
+relationship between the eigenvalues of $\trans{A}A$ and the images
+$A\vec{v_i}$ (let us recall that the Spectral Theorem guaranteed an
+orthonormal basis, hence $\norm{\vec{v_i}}_2 = 1$): \\
+
+\[
+(A\vec{v_i}) \cdot (A\vec{v_i}) =  \lambda_i \vec{v_i} \cdot \vec{v_i}
+\ds{\iff} \norm{A\vec{v_i}}_2^2 = \lambda_i \norm{\vec{v_i}}_2^2
+\ds{\iff} \norm{A\vec{v_i}}_2 = \sqrt{\lambda_i} 
+\]
+\hfill
+
+Now we just define the vectors \vec{u}\apos{s} as the unitary version
+of the images of vectors \vec{v}\apos{s}; and use the above
+relationship to bring the eigenvalues of $\trans{A}A$ into the
+picture: \\
+
+\[
+\vec{u_i} = \dfrac{A\vec{v_i}}{\norm{A\vec{v_i}}} =
+\dfrac{1}{\sqrt{\lambda_i}} A\vec{v_i}; \ds{\forall} i=1 \dots r = \func{rank}(A)
+\]
+\hfill
+
+Do we have enough singular values $\lambda_i$ in $\trans{A}A$ (we
+need exactly $r$), and all of them are positive? (otherwise,
+$\sqrt{\lambda_i}$ would not be real). We have properly prepared for
+this moment, and the whole purpose of having mentioned 
+\cref{thm:grameig}, was precisely to give a positive answer to these
+questions. We are safe in this regard then, and can proceed. \\
+
+In general $\func{rank}(A) = r < m = \dim{\R{m}}$, so we must likely
+need to extend the set $\{\vec{u_1},\vec{u_2},\dots,\vec{u_r}\}$ to an
+orthonormal basis of \R{m} to complete the SVD
+factorization. Fortunately, there is a 
+known theorem in Linear Algebra that guarantees that we can do that
+indeed (see theorem $2.1.1$ from \cite{golub13}, for example). \\
+
+Finally, by naming $\norm{A\vec{v_i}}_2 = \sqrt{\lambda_i}$ as $\sigma_i$
+(for $1 \le i \le r$), we can finally achieve the long wanted property
+of the two bases: \\
+
+\[
+A\vec{v_i} = \norm{A\vec{v_i}} \vec{u_i} = 
+\sqrt{\lambda_i} \vec{u_i} =
+\sigma_i \vec{u_i} \ds{;} \ds{\forall} 1 \le i \le r = \func{rank}(A)
+\]
+\end{proof}
+\hfill
+
+The just proved \cref{thm:SVD3} is the precondition that we
+need to apply \cref{thm:SVD1} and \cref{thm:SVD2} from previous
+sections. The eigenvalues of the symmetric matrix $\trans{A}A$ may not
+necessarily be in descending order, as the SVD theorem requires; but
+once we have them, we can sort them in such way (which will implicitly
+sort the $\vec{v}\apos{s}$ and $\vec{u}\apos{s}$ vectors in the
+bases). All together can finally tackle the original SVD
+\cref{thm:SVD}, stated at the beginning of this chapter. This
+concludes our proof of the SVD factorization, using the Spectral
+Theorem as the main tool. \\ 
+
+It may had seen as an extremely detailed proof, even if not all the
+auxiliary theorems were proved in this work (but most of them were at least
+mentioned explicitly, some even formally). This unusual level of
+detail may appear cumbersome for the professional mathematician, as all the
+literature we consulted always presented quite compressed proofs which
+skipped or simplified a lot steps. But we
+considered that the approach taken here, could be useful for the occasional
+reader and for people who are introducing themselves to the topic, and
+want to have an almost self-contained proof of the SVD that requires
+little previous context (at least much less than regular books and
+articles).  Worth to say also, that this level of detail was needed
+for the authors' own understanding as well.  
+
+

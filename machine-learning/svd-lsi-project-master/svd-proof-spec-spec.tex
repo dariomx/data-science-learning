@@ -1,0 +1,169 @@
+\subsubsection{The Spectral Theorem}
+
+With the introduction in previous section of the gramian matrix
+$\trans{A}A$, it is time for the heavy machinery that will allow us to
+prove the SVD \cref{thm:SVD}; we are talking of course, about
+the Spectral Theorem. We will not only present the theorem, but also
+include one of the many possible proofs. The one we chose was published
+by Wilf in \cite{wilf81}, and we did so because of its brevity and
+elegance. It actually makes an interesting connection between the
+Linear Algebra world where have been moving so far, and the  world of
+Topology; the link is created by using the properties of compact
+sets. But before defining what a compact set is, let us 
+motivate this interesting usage. \\
+
+A common problem that many people are familiar with, specially if they
+took single-variable calculus courses at college; is that of finding the
+minima or maxima of a given function $f: \R{} \fromto \R{}$. There is a
+mechanical part about how to calculate those critical points, but a
+crucial part is to verify on the first place, if they actually
+exist. A common requirement is for the function $f$ to be continuous,
+but further requirements are also needed on its domain. The reader may
+recall the famous Extreme Value Theorem, which establishes what are those
+conditions on the domain for single-variable functions: \\
+
+\begin{theorem}
+\label{thm:xtrem}
+Let $f: \R{} \fromto \R{}$ be a continuous function over the closed
+(and bounded interval) $[a,b]$, then $f$ reaches its maximum and its
+minimum over the same interval. 
+\end{theorem}
+\hfill
+
+The \cref{thm:xtrem} tells us what the required condition is on
+the domain of a continuous function $f$, in order to guarantee that its
+critical points (minimum/maximum) actually exist. The
+condition is simply to have a closed interval, which though not
+evident, has the following two properties: \\
+
+\begin{enumerate}
+\item Closed: It contains its limit points \footnote{The intuitive
+  idea for limit points, is that a ``limit'' process can approximate
+  them by using points inside the set.} (like $0$ and $1$).
+\item Bounded: There are real numbers which serve as lower and upper
+  bounds for all the elements of the interval \footnote{In the case of a closed
+  interval in \R{}, these bounds happen to be the limit points and are
+  inside the interval; but for more general spaces, that may not be
+  the case.}.
+\end{enumerate}
+\hfill
+
+A set which has these properties of being closed and bounded, is said
+to be compact. Being compact, is  a generalization of the closed intervals
+on the real line. Why do we need such generalization? Well, simply
+because we may be interested in calculating minima and maxima for
+functions defined over more complex sets than \R{}; for example,
+vector spaces or matrix spaces. Another important property of
+compact sets, is that continuous functions preserve its
+``compactness''; that is, if $S$ is a compact set and $f$ a continuous
+function, then $\func{f}(S)$ is also a compact set. \\
+
+Armed with this brief, but hopefully enough understanding of what
+compact sets are; let us proceed with the proof.
+The first required artifact is a function called \func{Od}, which
+intuitively measures how close is an square matrix of $n \times n$,
+from having a diagonal form:
+
+\[
+\func{Od}(A) = {\sum\sum}_{i \ne i} A_{ij}^2
+\]
+\hfill
+
+The next artifact we need is the set of all orthogonal matrices
+(denoted \bigO{n} \footnote{Not to be confused with the big-O
+  notation for algorithms complexity.}). Using product multiplication, this set has the
+algebraic structure of a group (though we do not really need such
+property here). \\
+
+The next tool is the following theorem, about Jacobi's method for
+finding eigenvalues, which tells us that it is always possible to
+perform rigid transformations (change of basis), that take one
+non-diagonal matrix into a new one that is closer to a diagonal form
+(per the metric defined by function $\func{Od}$). \\
+
+\begin{theorem}
+\label{thm:jacobi}
+If $A$ is a real non-diagonal matrix, $\implies$ there is an orthogonal
+matrix $J$ such that $\func{Od}(\trans{J} A J) < \func{Od}(A)$. 
+\end{theorem}
+\hfill
+
+An informal proof is given in \cite{wilf81}, and a more detailed
+discussion is found in \cite{golub13}. This is the last tool we needed
+for presenting the proof of the Spectral Theorem from \cite{wilf81},
+which follows below: \\
+
+\begin{theorem}
+\label{thm:spec}
+If $A$ is a symmetric real matrix, $\implies$ there is a real orthogonal
+matrix $Q$ such that $\trans{Q}AQ$ is diagonal. 
+\end{theorem}
+\hfill
+
+\begin{proof}
+Let $f$ be the function that, given the fixed matrix $A$, maps every
+orthogonal matrix $P$ into the product $\trans{P}AP$. This function is
+continuous over the compact set \bigO{n}; hence, $\func{f}(\bigO{n})$ is also
+compact. The set $\func{f}(\bigO{n})$ contains all the possible products of
+fixed matrix $A$ with orthogonal matrices, that may or may not give a diagonal
+ as result. Then, we basically use brute force: search for the best
+candidate in that set of options. And we do that, by using the metric
+we define specifically for that purpose: the function
+$\func{Od}$. Thus, we want to search for the product of the form
+$\trans{P}AP$ (an element of $\func{f}(\bigO{n})$ which give us the
+minimum value of function $\func{Od}$. Here is where the compactness
+property comes into play; if the domain $\func{f}(\bigO{n})$ was not compact, we could
+not even talk about the minimum of the (continuous) function
+$\func{Od}$. \\
+
+Knowing that, the existence of the minimum of function \func{Od} in the
+set $\func{f}(\bigO{n})$ is granted, the next thing to realize is that
+such minimum must be zero. This is easily seen by using reduction to
+the absurd: let us suppose that the minimum reached at matrix
+$D = \trans{Q}AQ$, is not zero. That would mean the matrix $D$ is not
+diagonal yet and then, by \cref{thm:jacobi} we know that there
+must exist another matrix $D^{*} = \trans{Q}DQ$, such that
+$\func{Od}(D^{*}) < \func{Od}(D)$. But that contradicts the assumption
+that the minimum was reached at $D$. Therefore, the minimum of
+\func{Od} must be zero. \\
+
+If the minimum of \func{Od} is zero, it means that is reached on a
+matrix which is diagonal (the square of all its
+off-diagonal\footnote{The off-diagonal elements of a matrix, are those
+which do not lie on the diagonal.} elements is zero, which means they
+are all zero).  The existence of such diagonal matrix of the form
+$\trans{Q}AQ$ proves the theorem. \\
+\end{proof}
+\hfill
+
+There are a couple of useful corollaries that derive from the Spectral
+Theorem just proved: \\
+
+\begin{itemize}
+\item In the search of the minimum, there was an implicit iterative
+  process of applying multiplications, where the matrix at step $i+1$,
+  was obtained from the previous matrix at step $i$, in the following
+  way: $D_{i+1} = \trans{J}D_iJ$ (the matrices $J$ are obtained by the
+  Jacobi's method of rotations \footnote{This algorithmic perspective,
+  is actually the main inspiration of this proof, which is taken from
+  \cite{wilf81}}). If we think in the series of 
+  transformations done by this iteration, from the original matrix
+  $A$, we would realize that all we did was to apply rigid
+  transformations; therefore, the resulting entries in the diagonal
+  must be real (there is no way that applying a rotation to real
+  matrix, produces another matrix with complex entries). \\
+
+\item The second observation is that the result $D = \trans{Q}AQ$,
+  where $D$ is a diagonal matrix; implies that $AQ = QD$, which in
+  turn can be broken into individual equations of the form $A\vec{q_i}
+  = d_i\vec{q_i}$. This tells us that the columns of the orthogonal
+  matrix $Q$ are the eigenvectors of $A$, and that the diagonal of $D$
+  contains its eigenvalues. We started the other way around, but in
+  practice, the usual motivation for diagonalizing a symmetric matrix
+  (or for applying the Jacobi's method), is to actually find the
+  eigenvalues and eigenvectors. 
+\end{itemize}
+\hfill
+
+These two corollaries will be useful in the final proof to come, that
+of the SVD \cref{thm:SVD}. 

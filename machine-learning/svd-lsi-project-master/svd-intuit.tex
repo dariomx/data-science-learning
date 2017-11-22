@@ -1,0 +1,53 @@
+\section{The intuition behind SVD}
+
+In this section we will provide several informal ways of looking at
+the SVD factorization, aiming to ignite the formal discussion of next
+section (where we prove the SVD theorem). \\
+
+\input{svd-intuit-fcomp.tex}
+\input{svd-intuit-cbasis.tex}
+\input{svd-intuit-geoin.tex}
+
+Although the geometrical interpretation works great for a simple
+example in \R{2}, there are a couple of missing details in the action of
+matrix $\Sigma$ which are worth mentioning. The first, is that the
+dimensions of $\Sigma$ are those of the original matrix ($n \times
+m$); therefore, its action is not only expanding or contracting, but
+also a migration of space (from \R{n} to \R{m}). If there are more
+rows than columns ($m > n$), the transformation $\Sigma$ will produce
+a bigger vector than its input (the diagonal entries beyond position
+$n$ will be zeroes, which in turn will fill the new vector entries
+with zeroes as well; up to $m$ entries). If on the contrary we have
+more columns than rows ($m < n$), then the effect will be a truncation
+of the input vector (resulting vector has as many entries as rows in
+$\Sigma$). In our example, this change of space was not perceived, as $n
+= m$. \\
+
+The second omitted detail about the action of $\Sigma$ in 
+\cref{fig:svd-geo-diag}, is even more subtle: along with the migration
+of space \R{n} to space \R{m}, we are also changing the basis; from
+$\{\vec{v_1},\vec{v_2},\dots,\vec{v_n}\}$ to
+$\{\vec{u_1},\vec{u_2},\dots,\vec{u_m}\}$. This additional effect may
+not be evident at all, but is thanks to an additional property that
+is required on the two basis for the SVD factorization to hold:
+
+\[
+A\vec{v_i} = \sigma_i\vec{u_i}, \ds{}\forall i=1 \dots r, \ds{}\text{where
+} r = rank(A).
+\]
+\hfill
+
+The above property tells us that the vectors from the two basis were
+picked in a very special way: each vector \vec{u_i} is parallel to the
+image under $A$ of its associated \vec{v_i}; in other words, the
+transformation $A$ maps the \R{n} basis
+$\{\vec{v_1},\dots\,\vec{v_n}\}$, into vectors which are parallel to
+the \R{m} basis $\{\vec{u_1},\dots\,\vec{u_m}\}$. Given that both basis
+are orthonormal, a consequence from this observation is that the
+orthogonality of the basis $\{\vec{v_1},\dots\,\vec{v_n}\}$ is preserved
+under $A$ (\cite{kalman96}). This is not a trivial property, and not
+every basis has it (given $A$ is assumed to be given). This is
+actually the key problem of the SVD factorization, and the proofs
+provided in the next section, focus around the problem of finding such
+special basis.  
+

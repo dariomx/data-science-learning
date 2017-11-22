@@ -1,0 +1,121 @@
+\subsection{The Single-Vector Lanczos Algorithm}
+
+We are armed now with all the required tools to present the main
+algorithm that is used for SVD, in the context of LSI (at least in the
+serial form). As mentioned on the introductory section of this
+chapter, the algorithm exists thanks to Berry
+(\cite{berry92},\cite{berry95}); we should probably present our
+respects to Berry in this moment, as he worked for more than a decade
+around the particular problem of solving efficiently the SVD/LSI
+problem (and in essence, today's applications still use his
+contributions). \\
+
+The \cref{alg:lasvd} we present below is not the final one, as there are more
+practical considerations to cover at the end of this subsection; but it is
+easier to present this simplified version, as it has all the main
+ingredients. We can see in particular, how it combines Lanczos
+Tridiagonalization Step (\cref{alg:lanczos-step}) (which implicitly
+uses the Power Method \cref{alg:power-method}), with the Rayleigh-Ritz
+Method (\cref{alg:ritz}). \\
+
+We also take the opportunity to come back to our original context,
+where $A$ is a large and sparse matrix coming from an LSI problem. The
+pseudocode is based on \cite{berry92}, filling additional details
+from the C code of the implemented routine (LAS2) \footnote{Originally
+the routine was coded in Fortran77, but we found more comfortable to
+check the C port instead; both made by Berry, by the way.}.
+
+\begin{algorithm}
+  \label{alg:lasvd}
+  \caption{The Single-Vector Lanczos Algorithm}
+%
+  \setstretch{1}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+    \Input{A matrix $A^{m \times n}$ and a truncation factor
+    $k$}
+    \BlankLine
+%
+    \Output{The $k$ singular values and its associated right singular
+      vectors of $A$ \footnote{The eigenvectors of matrix $\trans{A}A$ are called
+        right singular vectors of $A$, while those of $A\trans{A}$ are the
+        left singular vectors.} (which are the first $k$ eigenpairs of
+      symmetric matrix $\trans{A}A$). Both are numeric approximations. } 
+    \BlankLine
+    \BlankLine
+%
+    Use Lanczos Tridiagonalization step \cref{alg:lanczos-step} to
+    generate a family of symmetric tridiagonal matrices, $\{ T_j \} (j
+    = 1,2, \dots, c) \suchthat c > k$. Note that these matrices
+    approximate the eigenvalues of symmetric matrix
+    $\trans{A}A$\ (which happen to be the singular values of $A$). \;
+    \BlankLine
+    \BlankLine
+%
+    \strut Compute the eigenvalues and eigenvectors of $T_k$ using the
+    (implicit) QL Method. \;
+    \BlankLine
+    \BlankLine
+%   
+    For each computed eigenvalue $\lambda_i$ of $T_k$ (hence of gramian matrix
+    $\trans{A}A$), calculate the associated unit eigenvector $\vec{z_i}$
+    such that $T_k\vec{z_i} = \lambda_i\vec{z_i}$. \;
+    \BlankLine
+    \BlankLine
+% 
+    For each calculated eigenvector $\vec{z_i}$ of $T_k$, compute the Ritz
+    vectors $v_i = Q_c\vec{z_i}$ as an approximation to the
+    $i$-th eigenvector of $\trans{A}A$ (hence, to the right singular
+    vectors of $A$). Note that the matrix $Q_c$ is a side product of
+    the first step. \; 
+    \BlankLine
+    \BlankLine
+%
+    return $(\{\lambda_1,\lambda_2,\cdots,\lambda_k\},
+            \{\vec{v_1},\vec{v_2},\cdots,\vec{v_k}\})$
+\end{algorithm}
+\hfill
+
+Although complete in appearance, \cref{alg:lasvd} still has a serious
+numerical issue: the potential loss of orthogonality in the vectors of
+matrix $Q_c$. To solve that problem, we could reorthogonalize all
+vectors at every execution of \cref{alg:lanczos-step}; but that would
+be kind of brute force, and eliminate the advantages of the whole
+proposal. A clever approach, selective reorthogonalization, was
+selected by Berry in order to complete his master-piece: the LASVD/LAS2
+routine \footnote{Berry actually proposed four different methods of
+  calculating SVD, for the LSI problem; LAS2 (descendant of LASVD)
+  routine is just one of them. But it seems the fastest, and it was the
+  only one ported to the new skin of Berry's SVDPACKC,
+  which is SVDLIBC \cite{svdlibc}. Interestingly though, Berry
+  mentions in \cite{berry91} that LASVD is suitable only for low to
+  medium precision in the singular values. A pending task then, is to
+  confirm of modern incarnations still have such limitation.}. \\
+
+The selective reorthogonalization approach, as explained by Golub in
+\cite{golub13}, is inspired on the error analysis made by Paige
+  \cite{paige71}. Peige shows that the most recently computed vector
+  \vec{\tilde{q_{k+1}}}, tends to have a non trivial and unwanted
+  component in the direction of the already converged Ritz vectors
+  \footnote{Recall that the Ritz vectors approximate the eigenvectors
+    of the gramian matrix of $A$, hence the singular vectors of
+    $A$}. Therefore, we do not need to re-orthogonalize against all
+  the previously calculated vectors, rather use only the already
+  converged ones. \\
+
+Such adjustment is done during the Lanczos step
+(\cref{alg:lanczos-step}), using a criteria devised by Parlett et al
+\cite{parlett79}, which allows one to: know when a Ritz vector is
+converged. \\
+
+Berry does not include a final pseudocode of his LASVD
+routine (inspired on the LANSOS routine from Parlett, Simon et
+al). The routine eventually got renamed as LAS2 and made its way into
+the famous SVDPACK (Fortran77) and SVDPACKC libraries; and more
+recently in the modern version called SVDLIBC. It is the latest, which
+is currently used by several LSI applications. 
+
+
+

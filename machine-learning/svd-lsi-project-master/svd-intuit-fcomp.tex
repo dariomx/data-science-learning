@@ -1,0 +1,49 @@
+\subsection{SVD as a function composition}
+
+The first thing to remember, is that matrices are the operational
+representation of an special type of function between vector
+spaces\footnote{The reader is invited to review any Linear Algebra
+  textbook, to recall the definition of a vector space}
+called linear transformations (also called linear mappings or linear
+  functions). We say is an operational representation, in the 
+sense that they provide an explicit recipe to apply the
+function. Furthermore, the functions they represent are
+special, as they have the nice property of preserve algebraic
+structure across domain and codomains. Such 
+property can be summarized as: \\
+
+\[
+f(\alpha x + \beta y) = \alpha f(x) + \beta f(y)
+\]
+\hfill
+
+Where the addition and products mentioned above, are the vector
+addition and multiplication by an scalar; defined for vector
+spaces. For the specific case of this work, where we restrict
+our attention to real matrices, we can tell that they do represent
+functions $f: \R{n} \fromto \R{m}$. \\
+
+In this context of linear functions, the matrix multiplication is the
+operational representation of the composition of the associated
+functions. A matrix factorization is in essence, a way to understand
+what the underlying function does; the whole product can be seen as
+serial algorithm, where each matrix represents on particular step or
+transformation. Each of the four matrices that appear on the SVD
+factorization, has its own function as follows:  
+
+\begin{itemize}
+\item $A$ is a function $\func{F_A}: \R{n} \fromto \R{m}$
+\item $V$ is a function $\func{F_V}: \R{n} \fromto \R{n}$
+\item Same goes for  \trans{V}, which is $\func{F_{\trans{V}}}: \R{n} \fromto \R{n}$
+\item $\Sigma$ is a function $\func{F_\Sigma}: \R{n} \fromto \R{m}$
+\item $U$ is a function $\func{F_U}: \R{m} \fromto \R{m}$
+\end{itemize}
+\hfill
+
+Thus, in the context of function compositions, the SVD factorization
+can be restated as: \\
+
+\[
+\func{F_A}(\vec{x}) = \func{F_U}(\func{F_\Sigma}(\func{F_{\trans{V}}}(\vec{x})))
+\]
+\hfill

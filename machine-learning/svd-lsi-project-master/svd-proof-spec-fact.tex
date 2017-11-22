@@ -1,0 +1,172 @@
+\subsubsection{The factorization properties}
+
+Let us resume the discussion from last section, where we claim that
+all we needed  was that the vectors of
+the two bases had the property of $A\vec{v_i} =
+\sigma_i\vec{u_i}$. Let us prove such claim, and show that if that
+condition is met, then SVD factorization can be achieved. \\
+
+\begin{theorem}[SVD Part 1: the factorization]
+\label{thm:SVD1}
+Let $A$ be a real matrix of $n \times m$,\text{if } $\exists$
+orthonormal basis $\{\vec{v_1},\vec{v_2},\dots,\vec{v_n}\}$ for \R{n},
+and another orthonormal $\{\vec{u_1},\vec{u_2},\dots,\vec{u_m}\}$ for
+\R{m} which hold the following property:
+
+\[
+A\vec{v_i} = \sigma_i\vec{u_i}, \ds{}\forall i=1 \dots r, \ds{}\text{where
+} r = rank(A).
+\]
+\\
+Then we can factorize matrix $A$ as $U \Sigma \trans{V}$. \\
+
+where 
+
+\begin{itemize}
+\item $V$ is the orthogonal matrix formed by arranging vectors
+\vec{v}\apos{s}
+\item matrix $U$ is defined similarly for vectors
+\vec{u}\apos{s}
+\item The only non zero entries of diagonal matrix $\Sigma$, are 
+those $\Sigma_{ii} = \sigma_i > 0$ for $1 <= i <= r$.
+\end{itemize}
+\end{theorem}
+\hfill
+
+\begin{proof}
+This \cref{thm:SVD1} is mentioned in \cite{kalman96}, though not
+explicitly proved. Let us do it here, following the advice from
+\cite{strang88}, that the trick is to think about a matrix
+multiplication $A B$, as the result of matrix-vector products ($A
+\vec{b_i}$), where the vectors are the columns of $B$. In our particular
+case, the matrix-vector products we have are $A\vec{v_i}$; if we
+arrange them as columns of a new matrix it would be equal to $A
+V$. That is: 
+
+\[
+\begin{bmatrix}
+  A\vec{v_1} \mid A\vec{v_2} \mid \cdots \mid A\vec{v_n} 
+\end{bmatrix} = 
+A 
+\begin{bmatrix}
+  \vec{v_1} \mid \vec{v_2} \mid \cdots \mid \vec{v_n} 
+\end{bmatrix} =
+AV
+\]
+\hfill
+
+Since we do not have product $AV$ in our target result, let us use the
+fact that $V$ is orthogonal; which in particular implies that \inv{V}
+= \trans{V}. That allows to focus on an target result, which involves
+$AV$: 
+
+\[
+A   = U \Sigma \trans{V} \ds{\iff}
+A V = U \Sigma V \trans{V} \ds{\iff}
+A V = U \Sigma
+\]
+\hfill
+
+So we can focus in proving that $A V = U \Sigma$. Let us work
+the left side first, which per our previous observation that
+$A\vec{v_i}$ are the columns of matrix product $AV$, and per hypothesis
+that $A\vec{v_i} = \sigma_i\vec{u_i}$ can be rewritten as follows:
+
+\begin{align*}
+  & A V &= \\
+  & A \begin{bmatrix}
+    \vec{v_1} \mid \vec{v_2} \mid \cdots \mid \vec{v_n} 
+  \end{bmatrix} &= \\
+  & \begin{bmatrix}
+      A\vec{v_1} \mid A\vec{v_2} \mid \cdots \mid A\vec{v_n} 
+    \end{bmatrix} &= \\
+  & \begin{bmatrix} 
+      \sigma_1\vec{u_1} \mid \sigma_2\vec{u_2} \mid \dots \mid \sigma_r\vec{u_r} 
+      \mid A\vec{v_{r+1}} \mid A\vec{v_{r+2}} \mid \dots \mid A\vec{v_{n}} 
+    \end{bmatrix}
+\end{align*}
+\hfill
+
+Let us now develop the left side $U \Sigma$ by thinking again in the
+result, as formed by columns of the form $U \vec{\Sigma_i}$ (where
+  \vec{\Sigma_i} is the $i$th column of diagonal matrix $\Sigma$): 
+
+\begin{align*}
+  & U \Sigma &= \\
+  & \begin{bmatrix}
+      U\vec{\Sigma_1} \mid U\vec{\Sigma_2} \mid \cdots \mid U\vec{\Sigma_n} 
+    \end{bmatrix} &= \\
+  & \begin{bmatrix}
+      U\vec{\Sigma_1} \mid U\vec{\Sigma_2} \mid \cdots \mid U\vec{\Sigma_r} \mid
+      U\vec{\Sigma_{r+1}} \mid U\vec{\Sigma_{r+2}} \mid \cdots \mid U\vec{\Sigma_{n}} 
+    \end{bmatrix} &= \\[1ex]
+  & \begin{bmatrix}
+      U\vec{\Sigma_1} \mid U\vec{\Sigma_2} \mid \cdots \mid U\vec{\Sigma_r} \mid
+      \smash{\underbrace{U\vec{0} \mid U\vec{0} \mid \cdots
+          \mid U\vec{0}}_{n - r}}
+    \end{bmatrix} &= \\[2.5ex]
+  & \begin{bmatrix}
+      U\vec{\Sigma_1} \mid U\vec{\Sigma_2} \mid \cdots \mid U\vec{\Sigma_r} \mid
+      \smash{\underbrace{\vec{0} \mid \vec{0} \mid \cdots \mid \vec{0}}_{n-r}} 
+    \end{bmatrix} &= \\[0.5ex]
+\end{align*}
+
+The last $n - r$ zero vectors were a consequence of the definition of
+$\Sigma$, which only has non-zeroes on diagonal up to position
+$r$. And the columns $U\vec{\Sigma_i}$ can be simplified further, as
+each column vector \vec{\Sigma_i} has the only non-zero entry
+$\sigma_i$ precisely at position $i$. Hence, only column $i$ of $U$
+survives after multiplying it by \vec{\Sigma_i}, and the final effect
+is just the multiplication by scalar $\sigma_i$:
+
+\[
+ U \Sigma = 
+\begin{bmatrix}
+   U\vec{\Sigma_1} \mid U\vec{\Sigma_2} \mid \cdots \mid U\vec{\Sigma_r} \mid
+   \smash{\underbrace{\vec{0} \mid \vec{0} \mid \cdots \mid \vec{0}}_{n-r}}
+\end{bmatrix} = 
+\begin{bmatrix}
+   \sigma_1\vec{u_1} \mid \sigma_2\vec{u_2} \mid \cdots \mid \sigma_1\vec{u_r} \mid
+   \smash{\underbrace{\vec{0} \mid \vec{0} \mid \cdots \mid \vec{0}}_{n-r}}
+\end{bmatrix}
+\]
+\hfill
+
+If we put together the developments for each side, we are almost done:
+
+\begin{align*}
+  & A V &= \\[1.5ex]
+  & \begin{bmatrix}
+    \sigma_1\vec{u_1} \mid \sigma_2\vec{u_2} \mid \cdots \mid \sigma_r\vec{u_r} \mid
+    \smash{\underbrace{A\vec{v_{r+1}} \mid A\vec{v_{r+2}} \mid \cdots \mid A\vec{v_{n}}}_{n-r}}
+  \end{bmatrix}  &= \\[3.5ex]
+  & \begin{bmatrix}
+    \sigma_1\vec{u_1} \mid \sigma_2\vec{u_2} \mid \cdots \mid \sigma_1\vec{u_r} \mid
+    \smash{\underbrace{\vec{0} \mid \vec{0} \mid \cdots \mid \vec{0}}_{n-r}}
+  \end{bmatrix} &= \\[1.5ex]
+  & U \Sigma
+\end{align*}
+\hfill
+
+\end{proof}
+
+It can be observed that the proof is not complete, though we are
+almost done; in order to achieve an equality between $AV$ and
+$U\Sigma$, the only missing part is that the last $n-r$ items on each
+side are the same. This can be restated in an additional theorem: \\
+
+\begin{restatable}[SVD Part2: basis of null space]{theorem}{svdtwo}
+\label{thm:SVD2}
+Assuming same definitions as \cref{thm:SVD1}, it must be the case that:
+
+\[
+A\vec{v_i} = \vec{0}, \textds{for} (r+1) \le i \le n
+\]
+
+which is equivalent to say that those vectors \vec{v_i}, belong to the
+null space of $A$ (they actually form a basis of it).
+\end{restatable}
+
+We do not have yet the required machinery to proof 
+\cref{thm:SVD2}, but we will do it on the next section, when we
+introduce the subspaces associated with each matrix $A$. \\

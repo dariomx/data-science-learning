@@ -1,0 +1,87 @@
+\begin{frame}[plain]
+  \frametitle{Latent Semantic Indexing}
+  \begin{block}{}
+  Documents are encoded using the Vector Space Model 
+  \begin{itemize}
+    \item A matrix $A$ of size $m \times n$
+    \item $m$ indexed terms
+    \item $n$ documents
+  \end{itemize}
+  \end{block} 
+
+  \begin{block}{}
+    The VSM can not handle ambiguity:
+    \begin{itemize}
+    \item Synonymity
+    \item Polysemy
+    \end{itemize}
+  \end{block} 
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{frame}[plain]
+	 	\frametitle{Latent Semantic Indexing}
+		\begin{block}{}
+\begin{table}[]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+             & {\bf d1} & {\bf d2} & {\bf d3} & {\bf d4} & {\bf d5} & {\bf d6} \\ \hline
+{\bf ship}   & 1        & 0        & 1        & 0        & 0        & 0        \\ \hline
+{\bf boat}   & 0        & 1        & 0        & 0        & 0        & 0        \\ \hline
+{\bf ocean}  & 1        & 1        & 0        & 0        & 0        & 0        \\ \hline
+{\bf voyage} & 1        & 0        & 0        & 1        & 1        & 0        \\ \hline
+{\bf trip}   & 0        & 0        & 0        & 1        & 0        & 1        \\ \hline
+\end{tabular}
+\caption{Terms-Documents matrix }
+\label{table:example00}
+\end{table}
+		\end{block} 
+	\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[plain]
+  \frametitle{Latent Semantic Indexing and the Truncated SVD}
+  \begin{block}{}
+  According to Deerwester et al. there is a latent space
+where documents and indexed terms are expresed with $r$ features.
+  \begin{itemize}
+    \item $A = U \Sigma V^{T}$
+    \item $U$ is the matrix of terms
+    \item $V$ is the matrix of documents
+    \item $\Sigma$ contains $r$ singular values
+  \end{itemize}
+  \end{block}
+
+  \begin{block}{}
+  The smallest singular values are actually noise and we can
+get rid of them
+  \begin{itemize}
+    \item By doing so we get $A_k = U_k \Sigma_k V_k^{T}$
+    \item This step is justified by Eckart-Young-Mirsky theorem 
+\begin{equation} 
+\min_{\{Z|rank(Z)=k\}} \|A-Z\|_{2} = \|A-A_{k}\|_{2} = \sigma_{k+1}
+\end{equation}
+  \end{itemize}
+  \end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[plain]
+  \frametitle{Latent Semantic Indexing and the Truncated SVD}
+  \begin{block}{}
+  1) In this space, to compare two terms:
+\begin{equation}
+A_{k}A_{k}^{T} = U_k \Sigma_k^{2} U_k^{T}
+\end{equation}
+  \end{block}
+
+  \begin{block}{}
+  2) To compare two documents:
+\begin{equation}
+A_{k}^{T} A_{k} = V_k \Sigma_k^{2} V_k^{T}
+\end{equation}
+  \end{block}
+
+  \begin{block}{}
+  3) The association between a term $i$ and a document $j$ is given by the value in
+position $ij$ in matrix $A_k$
+  \end{block}
+\end{frame}

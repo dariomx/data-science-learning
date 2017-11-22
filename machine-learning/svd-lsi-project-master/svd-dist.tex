@@ -1,0 +1,43 @@
+\chapter{Distributed SVD algorithm}
+\label{cha:svd-dist}
+
+In the previous chapter we discussed the state of the art, regarding
+the serial version of the SVD algorithm, on the context of the LSI
+problem; such algorithm was discussed under the assumption that
+the matrix and auxiliary artifacts fit into the RAM of such
+computer. We also mentioned that such algorithm, could benefit from
+parallel or vectorized linear algebra kernels; speciall for its most
+expensive operations (like the sparse matrix-vector
+multiplication). In this chapter, we will discuss a chosen distributed version
+of SVD algorithm; where the calculation is spread across computing
+nodes in a cluster, aiming mainly to scale in time (due the inherent
+parallelization). \\
+
+The most scalable and documented algorithm for SVD-LSI, that we found
+in literature, was that of Radim \Rehurek; who published his results
+into a series of articles (\cite{rehurek10a},
+\cite{rehurek10b} and \cite{rehurek11b}), and culminated the effort
+with his PhD thesis (\cite{rehurek11a}). All the articles are
+  pretty much contained  in \Rehurek's Phd thesis, then unless stated
+  explicitly, all the references to his work in this chapter will be
+  from that publication. Is is 
+fair to emphasize though, that \Rehurek thesis covers other topics
+besides those we care about in this project; thus, we focused on his
+chapter of SVD/LSI only. \\
+
+Another pertinent clarification about \Rehurek's work, is that he
+offers the distributed algorithm mostly as a way of speeding up the
+SVD calculation (scale in time); and not precisely for tackling bigger
+problems that simply do not fit in the memory of a single computer
+(scale in space). On the large scale experiments that he reports, the
+resulting matrix can pretty much fit into the RAM of a modern personal computer;
+actually, he uses that to compare the reduction in time on the serial
+execution (single machine) vs the distributed execution (cluster).
+
+\input{svd-dist-alg.tex}
+\input{svd-dist-subtrack.tex}
+\input{svd-dist-merge.tex}
+\input{svd-dist-compres.tex}
+\input{svd-dist-accu.tex}
+
+

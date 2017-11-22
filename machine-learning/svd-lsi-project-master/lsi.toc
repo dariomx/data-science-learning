@@ -1,0 +1,37 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Theory behind SVD}{5}{chapter.1}
+\contentsline {section}{\numberline {1.1}The intuition behind SVD}{6}{section.1.1}
+\contentsline {subsection}{\numberline {1.1.1}SVD as a function composition}{6}{subsection.1.1.1}
+\contentsline {subsection}{\numberline {1.1.2}SVD as a change of basis}{7}{subsection.1.1.2}
+\contentsline {subsection}{\numberline {1.1.3}SVD as a geometrical interpretation}{8}{subsection.1.1.3}
+\contentsline {section}{\numberline {1.2}The SVD proofs}{10}{section.1.2}
+\contentsline {subsection}{\numberline {1.2.1}Algebraic proof (using Spectral Theorem)}{11}{subsection.1.2.1}
+\contentsline {subsubsection}{\numberline {1.2.1.1}The factorization properties}{12}{subsubsection.1.2.1.1}
+\contentsline {subsubsection}{\numberline {1.2.1.2}The Fundamental Theorem of Linear Algebra}{14}{subsubsection.1.2.1.2}
+\contentsline {subsubsection}{\numberline {1.2.1.3}The gramian matrix $\ensuremath {\tmspace +\thinmuskip {.1667em}{A}^{T}\tmspace +\thinmuskip {.1667em}}A$}{20}{subsubsection.1.2.1.3}
+\contentsline {subsubsection}{\numberline {1.2.1.4}The Spectral Theorem}{24}{subsubsection.1.2.1.4}
+\contentsline {subsubsection}{\numberline {1.2.1.5}The spectral proof of SVD}{28}{subsubsection.1.2.1.5}
+\contentsline {subsection}{\numberline {1.2.2}Geometric proof (using Compactness)}{30}{subsection.1.2.2}
+\contentsline {chapter}{\numberline {2}Lanczos SVD Algorithm}{37}{chapter.2}
+\contentsline {section}{\numberline {2.1}SVD as an eigen problem}{38}{section.2.1}
+\contentsline {section}{\numberline {2.2}Derivation of the serial algorithm}{39}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}The Power Method}{40}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}The Rayleigh-Ritz Method}{42}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}The Lanczos Tridiagonalization Step}{44}{subsection.2.2.3}
+\contentsline {subsection}{\numberline {2.2.4}The Single-Vector Lanczos Algorithm}{47}{subsection.2.2.4}
+\contentsline {section}{\numberline {2.3}Profiling and Parallelization}{49}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Linear Algebra Kernels: BLAS and LAPACK}{49}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}The two hot spots: SPMXV and IMTQL2}{50}{subsection.2.3.2}
+\contentsline {subsection}{\numberline {2.3.3}SVDLIBC: a history of lost parallelism}{52}{subsection.2.3.3}
+\contentsline {chapter}{\numberline {3}Distributed SVD algorithm}{55}{chapter.3}
+\contentsline {section}{\numberline {3.1}The one-pass distributed algorithm}{56}{section.3.1}
+\contentsline {section}{\numberline {3.2}Subspace tracking}{58}{section.3.2}
+\contentsline {section}{\numberline {3.3}Merging Two SVD factorizations}{60}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Input and Output Parameters}{61}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Construction of a new basis}{62}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Producing the diagonal matrix $\Sigma $}{63}{subsection.3.3.3}
+\contentsline {subsection}{\numberline {3.3.4}Calculating the final matrix $U$}{66}{subsection.3.3.4}
+\contentsline {section}{\numberline {3.4}Complexity and performance}{67}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}Time complexity of the Merge-SVD algorithm}{67}{subsection.3.4.1}
+\contentsline {subsection}{\numberline {3.4.2}Performance with a large scale corpus}{68}{subsection.3.4.2}
+\contentsline {section}{\numberline {3.5}Accuracy of the merge algorithm}{69}{section.3.5}

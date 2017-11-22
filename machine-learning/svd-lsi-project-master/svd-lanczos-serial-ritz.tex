@@ -1,0 +1,101 @@
+\subsection{The Rayleigh-Ritz Method}
+
+The method presented in this subsection is not really an
+step forward from the Power Method, but rather a parallel development
+(both will be merged in the Lanczos Algorithm of further
+subsections). It is actually an auxiliary tool that many eigenproblem
+solvers need; not necessarily for symmetric matrices (although we
+still assume that, it order to maintain our desired scope). \\ 
+
+Suppose that, in order to find the eigenpairs \footnote {An eigenpair
+  is the tuple $(\lambda_i,\vec{v})$ of an eigenvalue and its
+  corresponding eigenvector} of a given matrix $A$,
+we generate a sequence of matrices ${ W_k }$ which contain
+progressively better approximations of such eigenpairs. A common
+problem for any procedure that goes that way, is how to ``extract''
+the actual eigenvectors from such subspace (the eigenvalues are the
+same, so those do not require further calculations). The
+Rayleigh-Ritz \footnote{Leissa argues that the method should not
+  really be attributed to Rayleigh but only to Ritz, (see
+  \cite{leissa05}).} method addresses precisely this common need. \\
+
+Before providing the pseudocode, let us explain a bit better what we
+mean by having ``calculated subspaces'' $W_k$; as that is a rather
+vague expression (though is quite common in the literature). What we
+really mean, is that we have a \emph{characterization} of the
+subspace; which is nothing more than a basis for it. The vectors of
+such basis are arranged as columns of the matrix $W_k$, and then, we
+are basically asking for the eigen decomposition of that matrix. \\
+
+Does not the above sound a bit circular? We start with the generic
+problem of finding eigenvalues and eigenvectors of symmetric matrix
+$A$; then we calculate through an iterative process another matrix
+$W_k$, which contains the basis of a subspace that we know has good
+approximations to the eigenpairs of our original matrix $A$. Then, we
+proceed to solve the eigenproblem for that new matrix $W_k$ ... looks
+like we finish right where we began! Of course that, though not
+mentioned always in literature, the intuitive idea is that the new
+matrix $W_k$ is a less generic than $A$. It is expected to have certain
+qualities that make the solution of its eigenproblem an easier task
+(compared to solving that for original matrix $A$).  \\
+
+Having clarified a bit the main idea of subspace eigenproblem solvers,
+let us continue to list the pseudocode for the Rayleigh-Ritz Method; which
+offers a way to ``extract'' the eigenvectors of original matrix $A$,
+out of the approximation matrix $W_k$. We based our procedure in
+\cite{jia01}: 
+
+\begin{algorithm}
+  \label{alg:ritz}
+  \caption{The Rayleigh-Ritz Method}
+%
+  \setstretch{1.5}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \DontPrintSemicolon
+%
+    \Input{Approximation subspace matrix $W_k$, symmetric matrix $A$}
+%
+    \Output{Set of desired (approximated) eigenpairs}
+%
+    $B \gets \trans{W} A W $ \;
+%
+    \For {each desired eigenpair $(\lambda_i,\vec{v_i})$ of $A$}
+    {
+%
+      Solve eigen equation $B\vec{x_i} = \tilde{\lambda_i} \vec{x_i}$ (where
+      $\tilde{\lambda_i} \simeq \lambda_i$) \;
+%
+      $(\tilde{\lambda_i}, \avec{v_i}) \gets (\lambda_i, W\vec{x_i})$,
+      where $\avec{v_i} \approx \vec{v_i}$ \;
+    }
+%
+    return $\{(\tilde{\lambda_1},\avec{v_1}),(\tilde{\lambda_2},\avec{v_2}),\cdots,\}$ \;
+\end{algorithm}
+
+If $W_k$ was the orthogonal matrix with the eigenvectors of $A$, then
+matrix $B$ would be diagonal (containing the eigenvalues). As $W_k$ is
+rather an approximation to such matrix, is usually the case that is
+something close to a diagonal (like a tridiagonal or bidiagonal); from
+there comes the fact that calculating its eigenpairs, is much easier
+than for original matrix $A$. \\
+
+Probably the less intuitive step from the algorithm is the assignment
+$\avec{v_i} = W\vec{v_i}$; but is not hard to prove its validity: 
+
+\begin{align*}
+\setstretch{10}
+& &B\vec{x_i} = \tilde{\lambda_i} \vec{x_i} \\\\
+& \iff &(\trans{W} A W)\vec{x_i} = \tilde{\lambda_i} \vec{x_i} \\\\
+& \iff &\trans{W} A (W\vec{x_i}) = \tilde{\lambda_i} \vec{x_i} \\\\
+& \iff &A (W\vec{x_i}) = \tilde{\lambda_i} (W \vec{x_i}) \\\\
+& \therefore & W\vec{x_i} \text{ is an (approx.) eigenvector of $A$} \xqed
+\end{align*}
+\hfill
+
+The vector \vec{v_i} is called a Ritz vector, and we will refer to it
+in such a way when we review the complete Lanczos algorithm.\\
+
+For further details of convergence or error analysis, please refer to
+Jian \cite{jia01}. 
+

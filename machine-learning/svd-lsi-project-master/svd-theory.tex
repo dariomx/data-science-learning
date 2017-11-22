@@ -1,0 +1,66 @@
+\chapter{Theory behind SVD}
+\label{cha:svd-theory}
+
+Let us begin by giving the formal definition of the SVD factorization,
+which is in indeed a theorem (we will restrict ourselves to real
+matrices, that is, to matrices whose entries belong to the field
+\R{}). \\
+
+\begin{theorem}[Singular Value Decomposition]
+\label{thm:SVD}
+Let $A$ be a real matrix of $n \times m$ \imply $\exists$ orthogonal matrices
+$V$ ($n \times $n) and $U$  ($m \times m$), and diagonal matrix
+$\Sigma$ ($m \times n$) \suchthat:
+
+\[
+A = U \Sigma \trans{V} 
+\]
+\\
+where $\Sigma$ has the following properties: 
+\begin{align*}
+ & \Sigma =  diag(\sigma_1,\dots,\sigma_p), & \textds{for} p = min(n,m)  \\
+ & \sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_r > 0, & \textds{for} r = rank(A) \\
+ & \sigma_{r+1} = \sigma_{r+2} = \dots = \sigma_p = 0 &
+\end{align*}
+\end{theorem}
+\hfill
+
+Note that in the \cref{thm:SVD}, we are considering diagonal
+matrices on its more generic form that does not require them to be
+square; the definition of diagonal matrix $M$ can simply be that any
+element other than $M_{ii}$ becomes zero. \\
+
+Before presenting the proofs, is convenient to provide more context
+about the theory behind this matrix factorization (and probably also,
+part of the motivation behind). \\
+
+\input{svd-intuit.tex}
+
+\section{The SVD proofs}
+The rest of this chapter provides more theoretical background about
+the SVD decomposition, in particular, it provides two different proofs of
+\cref{thm:SVD}:
+
+\begin{itemize}
+  \item Algebraic proof using the Spectral Theorem.
+  \item Geometric proof (implicitly using Compactness).
+\end{itemize}
+\hfill
+
+Each one of those proofs is intended to bring a
+different perspective, about such an important result as SVD is. The
+list is not exhaustive of course, there could be many more ways of 
+proving it; but hopefully the short list presented here, will give the
+reader an idea about the rich theory behind this decomposition. \\
+
+As with any mathematical theorem, proving is done based on previous
+results; since this is not a text book, we can not afford the luxury
+of proving every auxiliary theorem we use. However, we made an effort
+for at least mentioning explicitly the theorems; pointing to
+references, when possible, about their respective proofs. For some few
+cases (like the Spectral Theorem), we did include the proof of the
+auxiliary theorem as well.
+
+\input{svd-proof-spec.tex}
+\input{svd-proof-geo.tex}
+

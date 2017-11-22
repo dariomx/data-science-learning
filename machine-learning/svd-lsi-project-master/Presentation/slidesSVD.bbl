@@ -1,0 +1,67 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{DDF{\etalchar{+}}90}
+
+\bibitem[ABB{\etalchar{+}}99]{lapack}
+Edward Anderson, Zhaojun Bai, Christian Bischof, Susan Blackford, James Demmel,
+  Jack Dongarra, Jeremy Du~Croz, Anne Greenbaum, S~Hammerling, Alan McKenney,
+  et~al.
+\newblock {\em LAPACK Users' guide}, volume~9.
+\newblock Siam, 1999.
+
+\bibitem[Bel73]{beltrami73}
+E.~Beltrami.
+\newblock Sulle funzioni bilineary.
+\newblock {\em Giornale Di Matematiche Ad Uso Degli Studenti Delle Universita
+  Italiane}, 1873.
+
+\bibitem[Ber92]{svdpack}
+Michael~W Berry.
+\newblock Svdpack: A fortran-77 software library for the sparse singular value
+  decomposition.
+\newblock 1992.
+
+\bibitem[DDF{\etalchar{+}}90]{deerwester90}
+Scott Deerwester, Susan~T. Dumais, George~W. Furnas, Thomas~K. Landauer, and
+  Richard Harshman.
+\newblock Indexing by latent semantic analysis.
+\newblock {\em JOURNAL OF THE AMERICAN SOCIETY FOR INFORMATION SCIENCE},
+  41(6):391--407, 1990.
+
+\bibitem[EY36]{eckart36}
+Carl Eckart and Gale Young.
+\newblock The approximation of one matrix by another of lower rank.
+\newblock {\em Psychometrika}, 1(3):211--218, 1936.
+
+\bibitem[MRS08]{manning08}
+Christopher~D. Manning, Prabhakar Raghavan, and Hinrich Schütze.
+\newblock {\em Introduction to Information Retrieval}.
+\newblock Cambridge University Press, Cambridge, UK, 2008.
+
+\bibitem[oraa]{oracle00}
+Oracle and collective intellect.
+\newblock
+  \url{http://www.oracle.com/us/corporate/acquisitions/collectiveintellect/index.html}.
+\newblock Accessed: 2015-08-08.
+
+\bibitem[orab]{oracle01}
+Oracle social cloud platform text analytics.
+\newblock
+  \url{http://www.oracle.com/us/solutions/social/social-engagement-monitoring-cloud-service/social-cloud-text-analytics-1870526.pdf}.
+\newblock Accessed: 2015-08-08.
+
+\bibitem[Roh07]{svdlibc}
+Doug Rohde.
+\newblock Svdlibc, 2007.
+
+\bibitem[{\v{R}}S11]{gensim}
+R~{\v{R}}eh{u}{\v{r}}ek and P~Sojka.
+\newblock Gensim--python framework for vector space modelling.
+\newblock {\em NLP Centre, Faculty of Informatics, Masaryk University, Brno,
+  Czech Republic}, 2011.
+
+\bibitem[SWY75]{salton75}
+G.~Salton, A.~Wong, and C.~S. Yang.
+\newblock A vector space model for automatic indexing.
+\newblock {\em Commun. ACM}, 18(11):613--620, November 1975.
+
+\end{thebibliography}

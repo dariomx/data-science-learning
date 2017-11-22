@@ -1,0 +1,29 @@
+[Curran02]
+Curran, James R., and Marc Moens. "Scaling context space." Proceedings of the 40th Annual Meeting on Association for Computational Linguistics. Association for Computational Linguistics, 2002.
+
+[Curran04]
+Curran, James Richard. "From distributional to semantic similarity." (2004).
+
+[Turney07]
+Turney, Peter. "Empirical evaluation of four tensor decomposition algorithms." (2007).
+
+[Turney10]
+Turney, Peter D., and Patrick Pantel. "From frequency to meaning: Vector space models of semantics." Journal of artificial intelligence research 37.1 (2010): 141-188.
+
+[Symonds11]
+Symonds, Michael, et al. "Modelling word meaning using efficient tensor representations." Proceedings of 25th Pacific Asia Conference on Language, Information and Computation. 2011.
+
+[Kolda09]
+Kolda, Tamara G., and Brett W. Bader. "Tensor decompositions and applications." SIAM review 51.3 (2009): 455-500.
+
+[Kang12]
+Kang, U., et al. "Gigatensor: scaling tensor analysis up by 100 times-algorithms and discoveries." Proceedings of the 18th ACM SIGKDD international conference on Knowledge discovery and data mining. ACM, 2012.
+
+[Papalexakis12]
+Papalexakis, Evangelos E., Christos Faloutsos, and Nicholas D. Sidiropoulos. "Parcube: Sparse parallelizable tensor decompositions." Machine Learning and Knowledge Discovery in Databases. Springer Berlin Heidelberg, 2012. 521-536.
+
+How to lose your fear of tensor products 
+https://www.dpmms.cam.ac.uk/~wtg10/tensors3.html
+
+[Carson10]
+Carlson, Andrew, et al. "Toward an Architecture for Never-Ending Language Learning." AAAI. Vol. 5. 2010.

@@ -1,0 +1,48 @@
+\begin{frame}[plain]
+	\frametitle{LASVD/LAS2 Profiling by Berry}
+	\begin{block}{}
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Routine & Library & Description \\
+\hline
+\hline
+SPMXV & BLAS level 2 & Sparse matrix-vector mult. \\
+\hline
+IMTQL2 / TRED2 & EISPACK & Implicit QL Algorithm. \\
+\hline
+DAXPY & BLAS level 1 & $\vec{x} \gets \gamma \vec{x} + \vec{y}$ \\
+\hline
+DAXPY & BLAS level 1 & $\vec{x} \gets \vec{y}$ \\
+\hline
+DDOT & BLAS level 1 & $\vec{x} \cdot \vec{y}$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+& \multicolumn{2}{|c|}{Alliant FX/80} & \multicolumn{2}{|c|}{Cray-2S/4-128} \\
+\hline
+Routine & Speedup & \%CPU Time & Speedup & \%CPU Time \\
+\hline
+\hline
+SPMXV & 3 & 27\% & - & 72\% \\
+\hline
+IMTQL2 & 4.3 & 14\% & - & 12\% \\
+\hline
+DAXPY & 5 & 17\% & - & - \\
+\hline
+DCOPY & 3.6 & 20\% & - & - \\
+\hline
+DDOT & 7.7 & 2\% & - & - \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+	\end{block}  
+\end{frame}

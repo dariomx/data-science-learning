@@ -1,0 +1,48 @@
+\chapter{Lanczos SVD Algorithm}
+
+Although quite useful for understanding the SVD factorization, the
+implicit algorithms mentioned in the \cref{cha:svd-theory} can not be
+used directly to calculate SVD in practice. This is in part due the
+intrinsic errors associated with using a finite-precision device like
+a computer (while the theorems we proved the existence of SVD, assumed
+infinite precision). There is a whole area of Mathematics, called
+Numerical Analysis, which targets the proper translation of
+theoretical algorithms into numerical ones; which can produce accurate
+results on a computer. A quite notable subarea, Numerical Linear
+Algebra, has received special attention over decades of research. The
+previous chapter mentions some of the main aspects to consider, with
+this regard. \\
+
+Therefore, in order to calculate SVD in practice, more specialized
+theorems that consider the limitations of computers are required; such
+theorems allow one to create particular algorithms, which possess the
+desired qualities: not only accuracy but high performance as well.
+This is specially true in today's world, where the scale of the
+matrices to analyze by far exceeds those used in the past. The
+particular case of Latent Semantic Indexing (LSI), the particular
+application we chose to restrict our study of SVD, illustrates very
+well this trend in the change of scale: original papers about LSI used
+a few thousands of documents, while today applications can easily
+reach millions, hundreds of millions or even more (like the Oracle
+product mentioned on the introductory chapter, which considers as
+documents ``posts'' in social networks). \\
+
+In this chapter we will describe the serial algorithm that is most
+commonly used, for solving the SVD factorization that comes from the
+LSI problem. A particular characteristic of this algorithm, at least
+in the form presented here, is that is implicitly assumed that the
+matrix and auxiliary data fit in the computer memory; therefore, it
+will have certain limitations in terms the size of the matrix to
+factorize (at least in commodity hardware, which is our focus).  The
+\cref{cha:svd-dist} describes another distributed algorithm, which does allow
+to spread the matrix in a cluster of commodity computers. \\
+
+Although the algorithm presented in this chapter is essentially
+serial, some of the routines it uses can accept parallelism and take
+advantage of either multi-core computers with shared memory; or
+vectorial processors. We mention those details in the last section as
+well. 
+
+\input{svd-lanczos-eigen.tex}
+\input{svd-lanczos-serial.tex}
+\input{svd-lanczos-para.tex}

@@ -1,0 +1,68 @@
+\section{SVD as an eigen problem}
+\label{sec:svd-lanczos-eigen}
+
+Aiming to calculate numerically the SVD factorizations, made
+researchers reformulate that problem as the quite related
+eigen decomposition (or eigenproblem). Such problem consists in
+finding, for an square matrix $A$, the eigenvalues and
+eigenvectors. If we arrange the eigenvectors in an orthogonal matrix
+$Q$ and the eigenvalues in a diagonal matrix $\Lambda$, the eigen
+problem can be restated as the following factorization: \\
+
+\[
+A = Q \Sigma \trans{Q}
+\]
+\hfill
+
+In order to see the connection between the SVD and the eigenproblem,
+we need to recall the gramian matrix $\trans{A}A$ from the theory
+chapter. It was the gramian, which provided the matrix $V$ on the
+first place; because the vectors 
+$\vec{v}$ were its eigenvectors (see \cref{cha:svd-theory}. Finding
+the matrix $V$ then, can be thought as the eigenproblem for matrix
+$\trans{A}A$; which can be stated as finding its diagonal
+factorization $\suchthat$: 
+
+\begin{equation}
+\label{eq:eigenprob-doc}
+\trans{A}A = V\Sigma^2\trans{V}
+\end{equation}
+\hfill
+
+But the same is true for matrix $U$, if we now consider the matrix
+$A\trans{A}$, which can be diagonalized if one finds its eigenvectors
+and place them into the matrix $U$ (the eigenvalues are the same as
+the gramian): 
+
+\begin{equation}
+\label{eq:eigenprob-term}
+A\trans{A} = U\Sigma^2\trans{U}
+\end{equation}
+\hfill
+
+It is the second eigenvalue problem equivalence, that is used for this
+distributed algorithm of chapter \cref{cha:svd-dist}. Per the SVD
+factorization $A = U\Sigma\trans{V}$, if we have the original matrix
+$A$, plus the diagonal $\Sigma$ and the matrix $U$;  we can
+reconstruct the matrix $V$ (if required): 
+
+\[
+\trans{V} = \inv{S} \trans{U} A = P A
+\]
+\hfill
+
+The matrix $P = \inv{S} \trans{U}$ is called the projection matrix, and
+is used in LSI for ``folding-in'' new document vectors \vec{x}, by
+calculating $P\vec{x}$; that is, the matrix $P$ is used as a
+predictive (rather than descriptive) model, to predict where the
+position of document \vec{x} will be in the latent space. \\
+
+For this chapter though, we could use either eigenproblem from
+\cref{eq:eigenprob-doc} or \cref{eq:eigenprob-term}. Actually, the literature
+originally reported the former, perhaps due the early shape of the
+matrices used for LSI (more terms than documents). Today's LSI
+applications have much more documents than terms, but still these
+early algorithms are useful, as we will see in \cref{cha:svd-dist}
+(where the original matrix is split into several submatrices, which do
+have the shape expected by Lanczos algorithm that we document here).
+

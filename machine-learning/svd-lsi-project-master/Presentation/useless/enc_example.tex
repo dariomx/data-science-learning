@@ -1,0 +1,25 @@
+\begin{frame}[plain]
+	\frametitle{[Curran02] More concrete example}
+	\begin{block}{}
+    A context relation is a tuple (w, r, w')
+    where w is a thesaurus term, occurring in relation
+    type r, with another word w' in the sentence. The
+    type can be grammatical or the position of w' in a
+    context window: (dog, direct-obj, walk). If tuple (r, w') is
+    treated a single unit (attribute of w), it fits in a matrix.
+	\end{block} 
+	\begin{block}{}
+    The simplest method implemented extracts the
+    occurrence counts of words within a particular window surrounding
+    the thesaurus term (saved in $v[i]$, where vector $v$ represents
+    the word).
+	\end{block} 
+	\begin{block}{}
+    Morphological analysis (OLT) on of both the words
+    and attributes, reduces the
+    representation space and number of unique 
+    context relations (eg coalescing the plural nouns with their
+    corresponding singular nouns); which also reduces data sparseness
+    problems). 
+	\end{block} 
+\end{frame}

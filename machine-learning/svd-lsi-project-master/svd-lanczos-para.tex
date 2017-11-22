@@ -1,0 +1,204 @@
+\section{Profiling and Parallelization}
+
+Berry does some interesting profiling about the \cref{alg:lasvd}, in
+his PhD thesis \cite{berry91}. He was specially interested in
+parallelizing such algorithm, along with other three methods he
+proposed. The numbers he reported used a term-document matrix of 
+$5831 \times 1033$; he tested in the medium size Alliant FX/80
+computer (with 8 processors), as well as the supercomputer
+Cray-2S/4-128 (with 4 processors). The Cray computer was able to
+deliver, in theory, 1.9 Gigaflops; as opposed to the 200 megaflops of
+the Alliant computer. The wall times he reports may no longer be
+relevant for today's LSI applications, as the data and the computers
+have changed much in the last 3 decades. But the profiling he did is
+still relevant, and actually we could not find a more up to date
+experiment (it would be an interesting exercise to do one). \\
+
+\subsection{Linear Algebra Kernels: BLAS and LAPACK}
+
+The \cref{alg:lasvd} was implemented in the tradition of Linear
+Numerical Algebra; one never reinvents the wheel but reuses existing
+standard libraries (called \emph{kernel} routines). This is specially
+important to avoid introducing 
+numerical errors; as it would be quite impossible that all the people
+knew the specialized details which are required to produce
+high-quality routines. A bonus that scientific programmers get by
+using these standards, is the potentially parallel implementation of
+the kernels (routines) being used. Today's standard are: 
+
+\begin{itemize}
+\item BLAS (Basic Linear Algebra Subroutines) \cite{blas}: which
+  originated in the Fortran77 world, but now have bindings to many
+  modern languages. They are classified in three levels: level 1 for
+  vector-vector operations, level 2 for matrix-vector operations and
+  level 3 for matrix-matrix operations. These routines are highly
+  specialized for particular processors/architectures, taking
+  advantage of the memory hierarchy, multi-cores, vectorial
+  capabilities of processors, custom assembler instructions,
+  etc. (\footnote{The ability to execute the 
+    same basic operation against several data; known
+    examples out of the super-computers world are the Intel SSE
+    features (see \cite{sse}).}). \\
+%
+\item LAPACK (Linear Algebra Package): is the modern incarnation of
+  the old libraries Linpack \cite{linpack} and Eispack \cite{eispack},
+  which implemented several numerical algorithms of Linear Algebra in
+  general, and in particular for solving the eigenproblem. LAPACK's original
+  goal was to make efficient implementation of those libraries, by
+  having specialized and highly optimized code for specific
+  architectures. It is built on the lower level BLAS library, but it
+  also has its own optimizations for many hardware vendors.
+\end{itemize}
+\hfill
+
+By the time Berry wrote his PhD thesis, LAPACK was not yet the
+standard, so he used Eispack instead; BLAS was available since
+then. He used the optimized implementations of these libraries for the
+two computers described above. The original implementation of Berry
+used the routines mentioned in \cref{tab:lasvd-kernels} (the list is
+not exhaustive, but includes the most relevant ones, performance-wise): \\
+
+\begin{table}[!h]
+\caption{Original BLAS and EISPACK routines used by \cref{alg:lasvd}}
+\label{tab:lasvd-kernels}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Routine & Library & Description \\
+\hline
+\hline
+SPMXV & BLAS level 2 & Sparse matrix-vector multiplication \\
+\hline
+IMTQL2 / TRED2 & EISPACK & Implement the (implicit) QL Algorithm. \\
+\hline
+DAXPY & BLAS level 1 & $\vec{x} \gets \gamma \vec{x} + \vec{y}$ \\
+\hline
+DAXPY & BLAS level 1 & $\vec{x} \gets \vec{y}$ \\
+\hline
+DDOT & BLAS level 1 & $\vec{x} \cdot \vec{y}$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{The two hot spots: SPMXV and IMTQL2}
+
+The \cref{tab:lasvd-prof} shows the results obtained by Berry; he
+measured 
+the speedup of the subroutines when incrementing the number of
+processors from 1 to 8 on the Alliant FX/80 computer (unfortunately he
+did not include speedups details for the Cray-2S/4-128). In addition,
+he includes the results of his profiling, by showing the percentage of
+the total time that each routine consumed. \\
+
+\begin{table}[!h]
+\caption{Original profiling and speedups for \cref{alg:lasvd}}
+\label{tab:lasvd-prof}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+& \multicolumn{2}{|c|}{Alliant FX/80} & \multicolumn{2}{|c|}{Cray-2S/4-128} \\
+\hline
+Routine & Speedup & \%CPU Time & Speedup & \%CPU Time \\
+\hline
+\hline
+SPMXV & 3 & 27\% & - & 72\% \\
+\hline
+IMTQL2 & 4.3 & 14\% & - & 12\% \\
+\hline
+DAXPY & 5 & 17\% & - & - \\
+\hline
+DCOPY & 3.6 & 20\% & - & - \\
+\hline
+DDOT & 7.7 & 2\% & - & - \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The above numbers quickly tell us that the routine SPMXV is the main
+bottleneck, and the one which would benefit more from the
+optimizations in optimized BLAS libraries. This multiplication comes
+from the Lanczos Tridiagonalization Step (\cref{alg:lanczos-step}),
+while calculating the product of the input matrix $\trans{A}A$ by the
+vectors \vec{q_k}. The fact that such matrix is never referred in a
+matrix-matrix operation, but only matrix-vector ones, is the main
+reason for claiming that Berry's algorithm is suitable for sparse
+matrices. Internally, the routine SPMXV may exploit the 
+format of the sparse gramian matrix in order to perform wise
+optimizations. \\
+
+The BLAS level 1 routines seem to have a quite different performance
+across the two tested computers, and Berry mentions in \cite{berry91},
+that it was due a synchronization required on the Alliant
+computer. Still, all these routines have great speedups with several
+processors; which is not surprising given their SIMD \footnote{Single
+  Instruction Multiple Data, a type of parallelism.} nature. Together with the
+SPMXV routine, the BLAS level 1 and level 2 kernels are likely to
+represent beyond 50\% of the total time. Simply installing an
+optimized BLAS library should suffice to give our algorithm a good
+parallel boost. \\
+
+The second candidate for enjoying the parallelization is the higher
+level routine IMTQL2, which calculates the eigenvalues and
+eigenvectors of the tridiagonal matrix produced by
+\cref{alg:lanczos-step}; it uses the Implicit QL Algorithm
+\cite{dubrulle71} for such purpose. Berry claims in \cite{berry91} and
+\cite{berry92}, that such 
+routine could clearly use parallel techniques; and the speedups
+reported in \cref{tab:lasvd-prof} seem to confirm such claim indeed. However,
+newer tests need to be performed with new hardware, new data and new
+libraries; in order to see if this routine is still worth to be
+parallel. Expectation is that the matrix-vector and vector-vector
+operations, still dominate whole performance of the algorithm. 
+
+\subsection{SVDLIBC: a history of lost parallelism}
+
+When one reads from Berry's papers about parallel SVD for
+large sparse matrices, that the \cref{alg:lasvd} accepts parallelism
+indeed; one takes for granted that modern incarnations inherited this
+feature. We will proceed to show that such assumption is incorrect. \\
+
+The original Fortran77 
+implementation of Berry was in SVDPACK \cite{svdpack}, which used
+directly BLAS routine SPMXV, as well as Eispack IMTQL2. This allowed
+transparent parallelism, as long as the environment had installed the
+optimized vendor libraries. \\
+
+But, perhaps motivated by the profiling results we showed in
+\cref{tab:lasvd-prof}, Berry changed the implementation in the C incarnation
+SVCPACKC \cite{svdpackc}; he stopped using directly the BLAS routine
+SPMXV, and instead accepted it as a user parameter (aiming to
+achieve higher flexibility, we presume). The other change he did, was
+to include directly a serial implementation of IMTQL2; this decision
+was crucial, as it prevented his \cref{alg:lasvd} from enjoying
+parallelization in step 2. \\
+
+Old ``Fortranish'' conventions are difficult to grap by new
+generations of programmers, and this motivated the rewrite of SVDPACKC
+into a modern skin called SVDLIBC \cite{svdlibc}. Although is mostly a
+change of style, it made another implicit serialization: the
+matrix-vector operations that were previously accepted as parameters,
+are now included with a serial implementation. In essence then, users
+of SVDLIBC are using a serial implementation of Berry's parallel
+\cref{alg:lasvd}. This seems like an unfortunate accident, as todays
+computers (even personal ones), usually have multi-core and vectorial
+capabilities. \\
+
+Above finding is specially relevant for us, as the SVDLIBC
+implementation plays the role of the \func{Basecase-SVD} function in
+the distributed SVD \cref{alg:svd-dist} (is used inside
+\func{SVD-Node} function, see also
+\cref{alg:svd-dist-node}). \Rehurek, the author, does 
+not offer profiling reports to see how much time is spent in
+\func{Basecase-SVD} function; but
+it is suspected to be a significant part. Such function can definitely
+benefit from using an optimized version of SVDLIBC (which internally
+takes advantage of BLAS/LAPACK installations). Currently, \Rehurek
+reports that only \cref{alg:merge-svd} takes advantage of vendor
+BLAS/LAPACK implementations \footnote{\Rehurek codes the
+  \cref{alg:merge-svd} himself, using NumPy routines \cite{numpy}; which
+  definitely takes advantage of the optimized BLAS/LAPACK
+  kernels.}. We added this task to our TODO list, in case this project
+evolves into our Msc. thesis.

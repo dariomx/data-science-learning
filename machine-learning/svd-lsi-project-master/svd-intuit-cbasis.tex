@@ -1,0 +1,31 @@
+\subsection{SVD as a change of basis}
+
+Next thing to remember, are the specially nice properties of orthogonal
+matrices. By definition they are square matrices ($n \times n$), and
+their columns form an orthonormal basis of \R{n}; this property
+implies that they are invertible, but also, that the inverse is
+specially easy to compute: it is just the transpose. In addition,
+orthogonal matrices are an special case of change of basis matrices:
+if $Q$ is an orthogonal matrix, then it can be seen as a function
+which takes vectors in the coordinates of its column basis, and that
+spits as result the coordinates in the canonical basis. On the same
+line, $\inv{Q}$ does represent the opposite change of basis
+(from the canonical coordinates to those in terms of the columns of
+$Q$). \\
+
+Having set the proper context, let us restate the SVD factorization as
+a sequence of successive transformations:
+
+\begin{enumerate}
+\item Start with a vector $\vec{x} \in \R{n}$ in canonical coordinates.
+\item Perform a change of basis using matrix \trans{V}, from the
+  canonical coordinates to those in terms of the columns of $V$.
+\item Once expressed as coordinates of columns of $V$, apply the
+  linear transformation $\Sigma$; this not only converts the vector
+  from \R{n} to \R{m}, but also expresses the coordinates in terms of
+  the columns of $U$.
+\item Once transformed, perform another change of basis using matrix
+  $U$; from the coordinates of columns of $U$ to the canonical ones
+  We end then with a vector in \R{m}.
+\end{enumerate}
+\hfill
