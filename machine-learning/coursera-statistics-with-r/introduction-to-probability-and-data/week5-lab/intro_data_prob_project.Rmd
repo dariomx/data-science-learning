@@ -288,13 +288,13 @@ abs(q2.rule(3) - 0.997)
 
 We can see that the percentual distribution pdiff pretty much passes all the normality tests we know, hence we can use the normal distribution to model it. This in turn, opens the door to leverage all the tools we have available in R. For instance, we could compute what is the probability associated with the desired value of 0.17 (seen as a quantile):
 
-```{r q2 prob 0.17}
+```{r q2 prob 0.17 a}
 pnorm(0.17, mean=q2.mean, sd=q2.sd)
 ```
 
 Mmm, that is a bit odd; it tells us that all the data would have passed before we see 0.17. That sounds like the value is totally out of the desired range. But let us not be that dramatic, let us repeat same exercise for the last visible value we got on our histogram (when we used 1,000,000 simulations it was 0.04):
 
-```{r q2 prob 0.17}
+```{r q2 prob 0.17 b}
 pnorm(0.04, mean=q2.mean, sd=q2.sd)
 ```
 
