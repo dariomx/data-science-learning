@@ -32,19 +32,18 @@ load("brfss2013.RData")
 
 ## Part 1: Data
 
-The study is clearly observational, as there is no variable aiming to 
-control here. Furthermore, the document has some details about the
+The study is clearly observational, as there is no variable we are aiming to control here. Furthermore, the document has some details about the
 sampling method used.
 
-They said that interviews were conducted over the phone, either over
+They said that interviews were conducted over the phone, either with
 land lines or cellular ones. For the land lines they used Disproportionate
 Stratified Sampling (DSS), a variant of Stratified Sampling mentioned
-in the course where the sample size of each strate does not need to be
+in the course, where the sample size of each strata does not need to be
 proportional to the strata size.
 
-For the cellular lines they used something similar to multi-stage sampling; where numbers are divided into groups then sampled with
-Simple Random Sampling. Difference with multi-stage sampling definition seen in course would be that there is no random selection of the groups;
-all are taken).
+For the cellular lines they used something similar to multi-stage sampling; where phone numbers are divided into groups then sampled with
+Simple Random Sampling. Difference with multi-stage sampling definition seen in course, would be that there is no random selection of the groups;
+all are taken instead.
 
 The document emphasizes that within each state of the US, the samples
 taken are actual "probabilistic samples". We did not see such definition
@@ -55,7 +54,7 @@ population within each state.
 Alright, enough said for the nature of the study: is observational. It
 contains random selection, hence it possess the generality attribute and
 its results can be extended to either state or country level. It will not
-contain any causality claims given that we did not controlled any variable nor did random assignment. 
+contain any causality claims given that we did not control any variable nor did random assignment. 
 
 
 
@@ -75,7 +74,7 @@ X_state: US state name
 
 The question itself: does the salary in California for women follow a normal distribution?
 
-The first step is to extract the data from California and women, but prior that we just ensure to discard incomplete records:
+The first step is to extract the data from California and women, but prior that we discard incomplete records:
 
 ```{r q1.data}
 q1.data = brfss2013 %>% 
@@ -116,12 +115,9 @@ hist(q1.data$num.income, freq=FALSE)
 lines(q1.x, dnorm(q1.x, mean=q1.mean, sd=q1.sd))
 ```
 
-The data does not really normal; a lot of samples fall into the last
-category "$75,000 or more". There does not seem to be a "center" nor
-symmetry. But this is empirical so far, let us try to use some of the
-tools learned at the course. Let us use a "normal probability plot",
-also called quantile-quantile (qq); so we can compare the quantiles
-of our data with those of a normal distribution:
+The data does not look normal; a lot of samples fall into the last
+category "$75,000 or more" (which may be due the fact that living in California is very expensive). There does not seem to be a "center" nor
+symmetry in the data. But this assessment is empirical so far, let us try to use some of the tools learned during the course. Let us use a "normal probability plot", also called quantile-quantile plot (aka qq plot). With that plot we can compare the quantiles of our data against those of a normal distribution:
 
 ```{r q1 qq}
 qqnorm(q1.data$num.income)
@@ -133,9 +129,7 @@ does not follow the straight line at all. There are systematic and
 dramatic shifts everywhere, specially at the ends. 
 
 Just to confirm with a non graphical tool, we can try to see if our
-data follows the 68-95-99.7% rule that the normal does. So, let us
-compute what percentage of the data falls within 1, 2 or 3 standard
-deviations from the mean.
+data follows the 68-95-99.7% rule that the normal distribution does. So, let us compute what percentage of the data falls within 1, 2 or 3 standard deviations from the mean. For that we will use the auxiliary function q1.rule, which given the distance (in terms of a factor of the standard deviation), counts how many points fall within that range from the mean and then just returns that count as a percentage of the total:
 
 ```{r q1.rule}
 q1.rule = function(sd.fact) {
@@ -152,13 +146,15 @@ q1.rule(3)
 
 ```
 
-From the output we can see that around 49% of data falls within one standard deviation, 100% within 2 and 3 standard deviations. These numbers differ quite a lot from our 68-95-99.7% rule.
+From the output we can see that around 49% of data falls within one standard deviation, while 100% falls within 2 and 3 standard deviations. These numbers differ quite a lot from our 68-95-99.7% rule.
+
+Having used these 3 tools seen during the course, we can conclude that the distribution of income of women in California; is not normal (we can say that because the study used proper random sampling techniques, hence we can generalize).
 
 **Research question 2:**
 
 For the second question, we want to mirror the interesting simulation experiment about the possible dependence/independence between gender and promotion. Let us land the template of such example into our particular data. 
 
-Word in the street is that in California, specially in the Bay Area, being asian may present now some advantages in terms of job opportunities. Will that be the case across all US? 
+Word in the street is that in California, specially in the Bay Area, being Asian may present now some advantages in terms of job opportunities and income. Will that be the case across all the country? 
 
 Let us define first the two derived variables to use (which in turn are built out of 3 variables from the original data). Please notice that we are not restricting ourselves anymore to California data, but rather working at country level. We are still restricting to women population though (such that we involve 3 raw variables).
 
@@ -176,7 +172,7 @@ table(brfss2013 %>%
       select(X_race))
 ```
 
-Hence, in order to emulate the balance between men and women from the reference experiment; we will pick a group which is similar in number to "Asian only" folks. A good candidate seems the category "Multiracial". Clarifications being made, let us proceed to computing the data for this question:
+Hence, in order to emulate the balance between men and women from the reference experiment; we will pick a group which is similar in number to "Asian only" folks. A good candidate seems the category "Multiracial, non-Hispanic". Clarifications being made, let us proceed to computing the data for this question:
 
 ```{r q2.data}
 q2.data = brfss2013 %>% 
@@ -188,7 +184,7 @@ q2.data = brfss2013 %>%
           mutate(is.asian=ifelse(X_race=='Asian only, non-Hispanic','Y','N'))
 ```
 
-With data in place we can formulate our question: are the variable high.income and is.asian independent?
+With data in place we can formulate our question: are the variables high.income and is.asian independent?
 
 In order to put the right context for such a question, let us see what percentage of the asian and non-asian subsets have a high income:
 
@@ -200,34 +196,34 @@ asian = q2.data %>% filter(is.asian=='Y')
 asian.high.income = asian %>% filter(high.income=='Y')
 p.asian = nrow(asian.high.income) / nrow(asian) 
 
-noasian = q2.data %>% filter(is.asian=='N')
-noasian.high.income = noasian %>% filter(high.income=='Y')
-p.noasian = nrow(noasian.high.income) / nrow(noasian) 
+non.asian = q2.data %>% filter(is.asian=='N')
+non.asian.high.income = non.asian %>% filter(high.income=='Y')
+p.non.asian = nrow(non.asian.high.income) / nrow(non.asian) 
 
 nrow(high.income)
 nrow(q2.data)
 p.high.income
 nrow(asian)
 p.asian
-nrow(noasian)
-p.noasian
+nrow(non.asian)
+p.non.asian
 ```
 
-From the result above we can observe that 2314 out of 8469 have a high income (4045 were asian and 4424 were non-asian). But the percentage of asian females with high income (~ %36), pretty much doubles that of non-asian (~ %19); the percentual difference is roughly 17%. Could this be the result of chance? Let us run the simulation to check it out.
+From the results above we can observe that 2314 out of 8469 have a high income (4045 were asian and 4424 were non-asian). But the percentage of asian females with high income (~ %36), is visibly higher than that of non-asian (~ %19); the percentual difference is roughly 17%. Could this be the result of chance? Let us run the simulation to check it out.
 
-Our null hypothesis will be that the two variables (X_race,income2) are independent, hence that these percentages are a product of chance (let us not forget that ultimately, the data came from sampling). 
+Our null hypothesis will be that the two variables (X_race,income2) are independent, hence that these percentages are a product of chance (let us not forget that ultimately, the data came from sampling). The alternate hypothesis then, is that the variables X_race and income2 are dependent.
 
 Let us build the following simulation function, which given the number of asian, non-asian and high incomes; does the following:
 
-1. Counts total female we need (asian + non-asian).
+1. Counts total females we need (asian + non-asian).
 2. Counts # of low income females (total - # high incomes)
 3. Using high and low income counts, creates a vector of flags
    representing either option (Y=high income, N=low income)
 4. Shuffles 7 times the vector  (just like with the cards).
 5. Picks first entries, as many as asian gals indicated.
 6. Rest of entries will represent non-asian gals.
-7. within each part, count what percentage has a high income
-8. Return the difference of such percentages
+7. within each part, count what percentage has a high income.
+8. Return the difference of such percentages.
 
 ```{r q2 simul func}
 q2.simul = function(num.asian, num.non.asian, num.high.income) {
@@ -247,7 +243,7 @@ q2.simul = function(num.asian, num.non.asian, num.high.income) {
 }
 ```
 
-Armed with our function we can proceed now to run the simulation a lot of times, let us say 1000 times. We accomodate all the percentual differences and build a histogram out of it.
+Armed with our function we can proceed now to run the simulation a lot of times, let us say 1000 times. We accommodate all the percentual differences and build a histogram out of it.
 
 ```{r q2 simul hist}
 num.asian = 4045
@@ -262,9 +258,9 @@ hist(pdiff)
 ```
 
 
-We can see that the percentual difference of 0.17 does not even appear on the range of visible values in histogram. We tried running a quite larger number of simulations, say 1000000; but despite taking much more time, the histogram just showed values up to 0.04. This would mean that values like 0.17 would appear far far away from the center. 
+We can see that the percentual difference of 0.17, does not even appear on the range of visible values in histogram. We tried running a quite larger number of simulations, say 1,000,000; but besides taking much more time, the histogram just showed values up to 0.04. This would mean that values like 0.17 would appear far far away from the center (if they ever appear).
 
-But before going further, it smells like this histogram reesembles a normal distribution. Let us confirm with same techniques we used for question 1:
+But before going further, it smells like this histogram resembles a normal distribution. Let us confirm with same techniques we used for question 1:
 
 ```{r q3 norm test}
 q2.mean = mean(pdiff)
@@ -286,39 +282,47 @@ abs(q2.rule(3) - 0.997)
 
 ```
 
-We can see that the percentual distribution pdiff pretty much passes all the normality tests we know, hence we can use the normal distribution to model it. This in turn, opens the door to leverage all the tools we have available in R. For instance, we could compute what is the probability associated with the desired value of 0.17 (seen as a quantile):
+We can see that the percentual distribution pdiff pretty much passes all the normality tests we know, hence we can use the normal distribution to model it. This in turn, opens the door to leverage all the tools we have available in R, for the normal distribution. For instance, we could compute what is the probability associated with the desired value of 0.17 (seen as a quantile):
 
 ```{r q2 prob 0.17 a}
 pnorm(0.17, mean=q2.mean, sd=q2.sd)
 ```
 
-Mmm, that is a bit odd; it tells us that all the data would have passed before we see 0.17. That sounds like the value is totally out of the desired range. But let us not be that dramatic, let us repeat same exercise for the last visible value we got on our histogram (when we used 1,000,000 simulations it was 0.04):
+Mmm, that is a bit odd; it tells us that all the data would have passed before we see 0.17. That sounds like the value is totally out of the desired range. This in turn, would mea®n that 0.17 is not a possible percentual difference if the two variables are to be independent.
+
+But let us not be that dramatic, let us repeat same exercise for the last visible value we got on our histogram (when we used 1,000,000 simulations it was 0.04):
 
 ```{r q2 prob 0.17 b}
 pnorm(0.04, mean=q2.mean, sd=q2.sd)
 ```
 
-Thus, for 1,000,000 simulations; approxilately 99.9% of the data lies before the 0.03 value; and that value is far away from the 0.17 we say from the survey. We can conclude then, with at least 99.9% confidence that the null hypothesis can be rejected. Then, we accept the alternative hypothesis that the variables are dependent indeed (being asian and having high salary, seem dependent across females in US).
+Thus, for 1,000,000 simulations; approximately 99.9% of the data lies before the 0.03 value; and that value is far away from the 0.17 we saw from the survey. We can conclude then, with at least 99.9% confidence that the null hypothesis can be rejected. Then, we accept the alternative hypothesis that the variables are dependent indeed (being asian and having high salary, seem dependent across females in US).
 
 **Research question 3:**
 
 Leveraging on same variables we already have, now we want to make an exercise to review the concept of conditional probability, as well as the tool of decision trees.
 
-Let us use first the following naming for our existing variables:
+Let us define first the following events, using the variables we already have computed:
 
 A = female is asian
+
 N = female is non-asian
+
 H = female has high income
-L = female does not have high income
+
+L = female does not have high income (low income)
 
 Using the numbers from our previous experiment, we know the following probabilities:
 
 P(A) =  4045 / 8469 ~ 0.48 
+
 P(N) = 1 - P(A) = 0.52
+
 P(H | A) = 0.36
+
 P(H | N) = 0.19
 
-Now our third question: what is the probability of being asian female, given that I have high income? in other words what is P(A | H) ?
+Now our third question, restricted again to female population: what is the probability of being asian, given that she has high income? in other words what is P(A | H) ?
 
 Let us begin by using our definition of conditional probability:
 
@@ -327,20 +331,23 @@ P(A | H) = P(A and H) / P(H)
 Thus, we need to compute the terms P(A and H) and P(H) with the information that we already have. 
 
 Let us imagine (cause time did not allow for drawing), that we build 
-a decision tree whose first and second level branching are based on race and income respectively. There will be a couple of paths in such branch, that correspond to the following joint probabilities:
+a decision tree whose first and second level branching are based on race and income respectively. There will be a couple of paths in such tree, that correspond to the following joint probabilities:
 
 P(A and H) = P(A) P(H | A) = 0.48 * 0.36 ~ 0.17
+
 P(N and H) = P(N) P(H | N) = 0.52 * 0.19 ~ 0.10
 
-Mirroring a similar example from the course (the one about spam email), we can tell that the probability of having high income is given by the addition of the two probabilities above (as both are thought to be disjoint events ... which makes sense, a female can not be asian and non-asian at the same time).
+Mirroring a similar example from the course (the one about spam email), we can tell that the probability of having high income is given by the addition of the two probabilities above (as both are thought to involve disjoint events ... which makes sense, a female can not be asian and non-asian at the same time).
 
 P(H) = P(A and H) + P(N and H) = 0.17 + 0.10 ~ 0.27
 
-So we have now the term P(H), and the term P(A and H) was already available. Hence we can just evaluate:
+Note: We knew that value, P(H)=0.27, from last question when we simply counted and took percentages. But this is a nice way to practice the theory of conditional probability, and verify that we got indeed same result.
+
+So we have now both terms P(H) and P(A and H), hence we can just evaluate:
 
 P(A | H) = P(A and H) / P(H) = 0.17 / 0.27 ~ 0.63
 
-Therefore, there is a probability of around 0.63 in being asian given that I have high income. Which is kind of expected given the previous exercise, where we saw that being asian and having high income look dependent.
+Therefore, there is a probability of around 0.63 that the female is asian given that she has high income. Which is kind of expected given the previous exercise, where we saw that being asian and having high income seem to be dependent variables (at least for females).
 
 * * *
 
