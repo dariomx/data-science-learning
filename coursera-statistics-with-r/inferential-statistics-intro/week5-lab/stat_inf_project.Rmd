@@ -1,0 +1,370 @@
+---
+title: "Statistical inference with the GSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlighting: pygments
+    theme: paper
+---
+
+## Setup
+```{r results='asis', echo=FALSE, include=FALSE,}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+```
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(statsr)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `gss`. Delete this note when before you submit 
+your work. 
+
+```{r load-data}
+load("gss.Rdata")
+```
+
+
+
+* * *
+
+## Part 1: Data
+According to the [Appendix A](http://gss.norc.org/documents/codebook/GSS_Codebook_AppendixA.pdf) of the GSS Codebook, the study uses sampling. The particular technique seems to have been changing throughout time, although it seems to involve a combination of stratified and multi-stage sampling.
+
+As always, the presence of random sampling allows one to generalize the results to the whole population; although we can not state causation, only correlation among the chosen variables in our research questions.
+
+* * *
+
+## Part 2: Research question
+
+#### Meta-information
+
+Before posing the question, I will reveal first some meta-information. I really wanted to exercise the ANOVA technique, as it is among the most interesting ones I found during this course. But this seemed a bit problematic, cause most of the interesting variables are categorical; even more they are boolean. 
+
+Most of the examples during the course were explained in the context of numerical variables, at least for ANOVA; hence I am not sure in how to apply that technique against categorical variables. Actually, given the nature of the dataset, a question that compares two percentages may make more sense; there are plenty of these questions and one can easily obtain two groups by using the background and personal information of the subjects.
+
+But I was really interested in practicing ANOVA, hence looked for numerical variables in whole dataset:
+
+```{r look-numvar}
+v = sapply(gss, class)
+v[v == "numeric" | v == "integer"]
+```
+
+Remembering that the background and personal information appears first, and that we usually want to focus on the actual questions about the subject's opinions, we can discard variables from *coinc* backwards. This leads to only a couple of opinion-based numeric variables: *rank* and *tvhours*. 
+
+Thus, If I want to apply the ANOVA method I have now a couple of numerical variables from where I can extract sample means eg (the dataset itself represents already a sample). The other ingredient I need is to split the interesting subset of data (could be whole dataset), into groups such that I can pose my question as comparing the mean across those groups. For those groups I would like to create a new variable called *decade*, and hence compare the mean across the different decades. 
+
+Having shared the meta-information that induced the actual questions, we can now proceed to state the actual question and to perform the pertinent validations for the chose method ANOVA.
+
+#### The actual questions
+
+As shared on previous sub-section, we want to play pretty much with 3 variables:
+
+1. decade (derived from year)
+2. rank (self-assigned rank of social position)
+3. tvhours (hours per day watching TV)
+
+We basically want to compare the mean of either *rank* or *tvhours* among the different *decade* groups; given the problem only asks for one question, we would need to pick one of the last two variables. Remembering that ANOVA has a normality requirement, we can delay this decision a bit; as probably one of the variables does not behave normally (spoiler alert: one does not indeed!).
+
+But let us go in order, the 3 requirements to comply with in order to use ANOVA (Analysis of Variance), are the following (quoting from the course): 
+
+1. The observations should be independent within and across groups
+
+2. The data within each group are nearly normal.
+
+3. The variability across the groups is about equal and use graphical diagnostics to check if these conditions are met.
+
+I consider that the last requirements are better tackled in next section (EDA), thus, for now we will just address the first one.
+
+Could not find exactly that is the periodicity of this study, but looks like is almost yearly with some gaps:
+
+```{r period-data}
+levels(factor(gss$year))
+```
+
+Is not totally clear whether the samples from each year are independent of each other; but the [Appendix A](http://gss.norc.org/documents/codebook/GSS_Codebook_AppendixA.pdf) of the GSS Codebook suggests that independent samples occurred at least within each decade. 
+
+Thus, for each decade at least they conducted new sampling and it would be very rare that same people from past exercises got selected again; therefore, we can assume independence across decades. Within each decade, the very definition of random sampling would imply that the individuals selected are also independent. 
+
+Worth to mention as well that the implicit requirement due CLT, that the sample must be less than 10% of population, is clearly met as well; as US population lies in the millions range and the total sample of GSS is ```r nrow(gss)```
+
+The other two requirements will be analyzed in next section, but for now let us state the two possible questions we want to answer:
+
+a) Does the data (sample) contain convincing evidence that there is a difference in the average rank across decades?
+
+b) Does the data (sample) contain convincing evidence that there is a difference in the average # of tv hours watched across decades?
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+The main purpose of this section is to confirm that the other two requirements for ANOVA are properly met. Let us remember what they are:
+
+2. The data within each group are nearly normal.
+
+3. The variability across the groups is about equal.
+
+Next two subsections will deal with them separately, but first let us extract the interesting piece of data for us:
+
+```{r x data}
+data = gss %>% 
+       select(year, rank, tvhours) %>% 
+       na.omit() %>% 
+       mutate(decade=as.factor(year - year%%10)) %>%
+       select(decade, rank, tvhours)
+```
+
+#### Normality within each group
+
+Let us begin by plotting the histograms of both variables of interest, rank vs tvhours, to see which one "looks" normal:
+
+```{r norm vars}
+par(mfrow=c(1,2))
+hist(data$rank, main="does rank look normal?")
+hist(data$tvhours, main="does tvhours look normal?")
+```
+
+In strict theory we have not checked normality within groups, cause we are not splitting yet by decade. However, looking at whole data can give a hint of whether groups will behave normal. From the comparison above, it looks like *rank* is our guy, as *tvhours* does not seem normal at all.
+
+Let us repeat the exercise but this time actually plotting each decade separately:
+
+```{r norm vars grp}
+par(mfrow=c(3,2))
+for(dec in as.numeric(levels(data$decade))) {
+  dec.data = data %>% filter(decade == dec)
+  hist(dec.data$rank, main=paste("rank in", dec))
+  hist(dec.data$tvhours, main=paste("tvhours in", dec))
+}
+```
+
+We can see that the group histograms pretty much preserved same structure as the global ones, hence we can discard the *tvhours* for now and focus on the *rank*.
+
+In addition to the histograms, it would be nice if we visualize the qq-plots for each group:
+
+```{r qq rank}
+par(mfrow=c(1,3))
+for(dec in as.numeric(levels(data$decade))) {
+  dec.data = data %>% filter(decade == dec)
+  r = dec.data$rank
+  qqnorm(r, main=paste("rank qq-plot ", dec))
+  qqline(r)
+}
+```
+
+The qq-plots reveal an approximately normal behavior; although we also observe systematic deviations! But let us not panic, just like in the course, many of those deviations must be due the fact that our variable *rank* is discrete but qq-plots expect continuous variables.
+
+
+#### Variability across groups 
+
+The next thing we need to validate, is whether the variability across each group is roughly the same. Our favorite measurement for variability is the variance, and box-plots a nice way to visualize that (actually, it is the only tool I can think of now, ha):
+
+```{r var grps}
+boxplot(rank ~ decade, data=data, 
+        main="Variability of rank across decades",
+        xlab="decade", ylab="rank")
+```
+
+
+We can observe that the last two decades have quite similar means, 
+as well as spread (variability). The first decade has as bit different mean, but not that far; however its variability seems wider. However, just like in the course, we kind of ignore that for the sake of applying the technique (in the [course video](https://www.coursera.org/learn/inferential-statistics-intro/lecture/6wfP3/multiple-comparisons) about ANOVA conditions, nothing was mentioned about what to do when one group has higher variability). 
+
+#### Resetting the data
+
+Given that we are choosing *rank* variable, and that we do not need any longer *tvhours*, let us recreate our data such that we only discard NA values for the interesting variables (in this way we could gain more rows for our research):
+
+```{r data re}
+data = gss %>% 
+       select(year, rank) %>% 
+       na.omit() %>% 
+       mutate(decade=as.factor(year - year%%10)) %>%
+       select(decade, rank)
+```
+
+* * *
+
+
+## Part 4: Inference
+
+Alright, putting aside the wider variance of the third group (decade 2010), we are ready to perform the statistical inference. We will split this task in two parts: first we will perform the ANOVA test to see if there is at least one differing pair, and if that is the case, we will proceed to perform the individual comparisons.
+
+#### ANOVA test
+
+Aiming to review the procedure, we will list one by one the calculations to perform the ANOVA test; which mostly involve the computation of the F statistic.
+
+First ingredient is the SST (Sum of Squares Total), which measures the total variability in the response variable (rank); and is pretty much like the variance but without dividing by (n-1). Note on variable names: usually, uppercase names are reserved for constants in programming, but aiming to mirror the explanations in [ANOVA Video](https://www.coursera.org/learn/inferential-statistics-intro/lecture/KoTvZ/anova), we will give ourselves the freedom of using them for regular variables:
+
+````{r sst}
+r = data$rank
+SST = sum((r - mean(r))^2)
+SST
+```
+
+Let us now compute SSG (Sum of Squares Groups), which measures the variability of response variable (rank) explained by the explanatory variable (decades). 
+
+```{r ssg}
+ssg.data = data %>% 
+           group_by(decade) %>% 
+           summarize(gmean=mean(rank), n=n())
+gmean = ssg.data$gmean
+n = ssg.data$n
+SSG = sum(n * (gmean - mean(r))^2)
+gmean
+n
+SSG
+```
+
+Now the SSE (Sum of Squares Error), which measures the variability within groups (not attributable to explanatory variable decades), and can be computed simply by subtracting the variability due decades from the total variability:
+
+```{r sse}
+SSE = SST - SSG
+SSE
+```
+
+Let us proceed now to compute the degrees of freedom we need to jump into the mean flavor. For the k (number of groups), we know already there are only 3:
+
+```{r dof}
+k = 3
+df.T = nrow(data) - 1
+df.G = k - 1
+df.E = df.T - df.G
+df.T
+df.G
+df.E
+```
+
+Let us calculate now the Mean Sum-Squared Group (MSG) and the Mean Sum-Squared Error (MSE), by taking the ratio of the previously computed SSG and SSE and their corresponding degrees of freedom:
+
+```{r msg mse}
+MSG = SSG / df.G
+MSE = SSE / df.E
+MSG
+MSE
+```
+
+And finally, we can compute the F statistic which is the ratio between the averages of inter-group variability and intra-group variability:
+
+```{r F}
+F = MSG / MSE
+F
+```
+
+Armed with our F statistic, let us remember first what is the hypothesis test that we want to make:
+
+H0 (null hypothesis): mean rank is same across decades
+HA (alternative hypo): there is at least a pair of decades which differ
+
+Now, we observe that this F statistic value is likely to be located far in the right tail of the F distribution, let us confirm that with a plot:
+
+```{r anova F loc}
+x = 1:50
+plot(x, df(x, df.G, df.E), 
+     main="F statistic lies in tail")
+lines(x, df(x, df.G, df.E))
+abline(v=F, col="red")
+```
+
+Hence, the p-value to compute will represent the area under the F distribution curve, starting from the red line that represents our F statistic of 26.43162. That area is going to be quite small, but let us confirm it. Let us compute now the p-value, which is the probability of having an statistic as extreme as we got (or more), assuming that null hypothesis is true. 
+
+```{r anova p-value}
+p.value = pf(F, df.G, df.E, lower.tail=FALSE)
+p.value
+```
+
+As suspected the p-value is quite small, smaller than standard significance level of 0.05 (%5), and even far smaller than much more strict values we can think of. Therefore, we reject the null hypothesis and conclude that there is enough evidence to say that there is at least one pair of decades which have different average ranks.
+
+#### Multiple comparisons
+
+Given that the mighty ANOVA test gave us green light, in the sense that we know there is at least one pair of decades with statistically significant differences in their rank, we can justify now spending time in computing those.
+
+We do now know the population $\sigma$, hence we need to use the Students't distribution. There are $C^3_2$ combinations of 3 decades, taken in pairs; which is just 3. Let us do the comparison first for the first and second decades, that is, let us compare the average *rank* between 1980 and 2000. Let us do it first in the form of another hypothesis test, and compute also the confidence interval at the end (just to ensure they agree with each other).
+
+##### Hypothesis test
+
+Our null hypothesis is that the average *rank* did not change from 1980 and 2000, and the alternative hypothesis is that they did:
+
+H0: $\mu_{1980} - \mu_{2000} = 0$
+HA: $\mu_{1980} - \mu_{2000} \ne 0$
+
+Given the inequality of the alternate hypothesis, we know that a two-sided test must be used.
+
+Alright, let us recall now what is the formula for the statistic we will compute:
+
+\[
+T = \dfrac{(\mu_{1980} - \mu_{2000}) - 0}{SE}
+\]
+
+Basically the differences of the respective means, minus the null value (zero), divided by standard error (SE). For this particular scenario, we know that SE is defined as:
+
+\[
+SE = \sqrt{\dfrac{MSE}{n_{1980}} + \dfrac{MSE}{n_{2000}}}
+\]
+
+Let us translate that to R:
+
+```{r SE 1980 vs 2000}
+se.data = data %>% 
+          filter(decade %in% c(1980, 2000)) %>%  
+          group_by(decade) %>% 
+          summarize(gse=MSE/n())
+SE = sqrt(sum(se.data$gse))
+SE
+```
+
+And we also know that the degrees of freedom to use with Student's t distribution is that used for error:
+
+```{r df 1980 vs 2000}
+df = df.E
+```
+
+and we also know that the significance level $\alpha$ needs to be corrected, to account for the inflated errors of Type I (false positives):
+
+\[
+\alpha_c = \dfrac{\alpha}{C^k_2}
+\]
+
+Let us suppose we want a significant level $\alpha=0.01$ of which for our particular case translates into:
+
+```{r alpha 1980 vs 2000}
+alpha = 0.01
+alpha.c = alpha / 3
+alpha.c
+```
+
+Alright, with all this setting let us compute now the T statistic:
+
+```{r T 1980 vs 2000}
+T.data =  data %>% 
+          filter(decade %in% c(1980, 2000)) %>%  
+          group_by(decade) %>% 
+          summarize(x.bar=mean(rank))
+x.bar.1980 = T.data[T.data$decade == 1980,]$x.bar
+x.bar.2000 = T.data[T.data$decade == 2000,]$x.bar
+T = ((x.bar.1980 - x.bar.2000) - 0)/SE
+T
+```
+
+Let us visualize now the location of such value under the Student's distribution:
+
+```{r anova T loc 1980 vs 2000}
+x = -10:10
+plot(x, dt(x, df), 
+     main="T statistic lies in tail")
+lines(x, dt(x, df))
+abline(v=T, col="red")
+```
+
+Similarly to what happened for the ANOVA test, the T statistic lies far away in the right tail; hence the p-value will be small, meaning that the probability of obtaining a T statistic as extreme as we got, assuming null hypothesis is true, is quite quite small. Let us compute p-value to double check that:
+
+```{r p-value 1980 vs 2000}
+p.value = 2 * pt(T, df, lower.tail = FALSE)
+p.value
+p.value < alpha.c
+```
+
+We just verified that p-value is indeed quite small, far smaller than our corrected $\alpha$. Hence, we reject null hypothesis (mean *rank* was the same for both decades) and we can conclude that there is strong enough evidence in the data to conclude that the average *rank* of decades 1980 and 2000 differ indeed.
