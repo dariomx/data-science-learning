@@ -262,7 +262,7 @@ HA (alternative hypo): there is at least a pair of decades which differ
 Now, we observe that this F statistic value is likely to be located far in the right tail of the F distribution, let us confirm that with a plot:
 
 ```{r anova F loc}
-x = 1:50
+x = seq(1, 50, length.out = 500)
 plot(x, df(x, df.G, df.E), 
      main="F statistic lies in tail")
 lines(x, df(x, df.G, df.E))
@@ -352,7 +352,7 @@ T
 Let us visualize now the location of such value under the Student's distribution:
 
 ```{r anova T loc 1980 vs 2000}
-x = -10:10
+x = seq(-10, 10, length.out = 1000)
 plot(x, dt(x, df), 
      main="T statistic lies in tail")
 lines(x, dt(x, df))
@@ -367,4 +367,46 @@ p.value
 p.value < alpha.c
 ```
 
-We just verified that p-value is indeed quite small, far smaller than our corrected $\alpha$. Hence, we reject null hypothesis (mean *rank* was the same for both decades) and we can conclude that there is strong enough evidence in the data to conclude that the average *rank* of decades 1980 and 2000 differ indeed.
+We just verified that p-value is indeed quite small, far smaller than our corrected $\alpha$. Hence, we reject null hypothesis (mean *rank* was the same for both decades) and we can conclude that, with %99 confidence, there is strong enough evidence in the data to conclude that the average *rank* of decades 1980 and 2000 differ indeed.
+
+#### Confidence interval
+
+Mirroring the methodology of the course, let us contrast the hypothesis test with the associated Confidence Interval; just to ensure they are consistent. We know that for the multiple comparisons that go after ANOVA, we need to used modified SE, df and $\alpha$. We have all available from previous section, so let us just recall the formula for the CI:
+
+\[
+(\bar{x_1} - \bar{x_2}) \pm t^{*}_{df} SE
+\]
+
+Our original $\alpha$ was $0.01$ and our its correction $\alpha_c$ is around $0.003333333$, which in turn yields a confidence level of around $0.9966667$. For computing the critical point $t^{*}_{df}$ we can take a half of corrected alpha, and call $qt$ routine from there; or we could add such half to the confidence level and use that value instead. Either is valid option given the symmetry of the t-digest distribution:
+
+```{r CI opts}
+t.left = qt(alpha.c/2, df)
+t.right = qt(1-alpha.c/2, df)
+t.left
+t.right
+```
+
+Let us take the right side, as we need the absolute value anyway; hence our final computation of the CI looks like this:
+
+```{r CI final}
+t.df = t.right
+x.diff = (x.bar.1980 - x.bar.2000)
+ci.start = x.diff - t.df * SE
+ci.end = x.diff + t.df * SE
+ci.start
+ci.end
+```
+
+
+Therefore our CI is $(0.2122662, 0.5012856)$, which does not include the null-value indeed (zero); thus the interval is in agreement with the hypothesis test we did before.
+
+Finally, let us visualize the Confidence Interval by plotting the t-student density distribution as well as vertical lines for the two critical points (left and right):
+
+```{r area CI}
+x = seq(-2, 2, length.out = 1000)
+plot(x, dt(x, df), 
+     main="CI interval")
+lines(x, dt(x, df))
+abline(v=ci.start, col="red")
+abline(v=ci.end, col="red")
+```
