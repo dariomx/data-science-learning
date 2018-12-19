@@ -1,0 +1,17 @@
+This data was compiled from the great data-set made available by Alex Olteanu at github:
+
+https://github.com/mircealex/Movie_ratings_2016_17/
+
+Such data is in turn, related to an interesting article posted at:
+
+https://medium.freecodecamp.org/whose-reviews-should-you-trust-imdb-rotten-tomatoes-metacritic-or-fandango-7d1010c6cf19
+
+Alex does not put any license terms over his data, hence the data
+I am putting here inherits whatever terms he decides (contacting
+him over email to ask about it).
+
+In the meantime I am just publishing to allow reviewers to grade my
+linear regression project at coursera (part of the Statistics with R specialization)
+
+Cheers
+dario.mx@gmail.com

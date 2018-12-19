@@ -1,0 +1,305 @@
+---
+title: "Modeling and prediction for movies"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+    
+---
+
+## Setup
+```{r results='asis', echo=FALSE, include=FALSE,}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+```
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(statsr)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `movies`. Delete this note when before you submit 
+your work. 
+
+```{r load-data}
+load("movies.Rdata")
+```
+
+
+
+* * *
+
+## Part 1: Data
+The data set is comprised of 651 randomly sampled movies produced and released before 2016. The sample itself was taken using APIs from
+Rotten Tomatoes and IMDB; hence, the quality of our sample in turn depends on the quality of those catalogs; meaning, whether they truly have a representative subset of all movies ever made.
+
+Above means that the results, that is the model, may not be suitable to
+predict about movies which were not represented by the potentially biased training set.
+
+
+* * *
+
+## Part 2: Research question
+
+Disclaimer: I based my analysis on the adjusted $R^2$ method, as well as the predictive performance of the resulting models.
+
+#### Part 2.1: History of the question
+
+The research question has a long history behind, as I tried a lot of things before picking both the question and the model itself. Presenting all the glory details may be cumbersome to the reader, hence I will proceed to summarize instead.
+
+I initially wanted to have as question the following: what is the best model that predicts the audience_score variable? The applicability of such model seems natural: being able to anticipate whether people will like a movie or not, before scores like those of Rotten Tomatoes become available. 
+
+There were several problems associated with such question, but the main one was the usefulness of the generated models: they simply did not predict properly; the predicted audience_score was always very close to 70, regardless of whether the true score was much lower or higher. 
+
+The inclusion of categorical variables made the analysis complex, as the summaries of the model were quite verbose and its contribution was not very clear. While they certainly increased the adjusted $R^2$, they did not seem to improve the predictive capability of the model. This situation was maintained even after doing a brute-force search of the best combination of variables, which maximized the adjusted $R^2$. Just for completeness we present below the code for this grid-search as well as its output (beware though that the code took more than one day):
+
+```{r grid-search, class.source="darkCode", eval = FALSE, echo = TRUE} 
+logmsg = function(...) cat(paste0(Sys.time(), ': ', sprintf(...), '\n'))
+
+drop.cols = c("title", "imdb_url", "rt_url", "audience_rating",
+              "imdb_rating", "imdb_num_votes", "critics_rating",
+              "actor1", "actor2", "actor3", "actor4", "actor5", 
+              "audience_score")
+names.mov = names(movies)
+inc.cols = names.mov[!(names.mov %in% drop.cols)]
+max.rsq = 0
+max.cols = NULL
+for(k in 1:length(inc.cols)) {
+  comb.k = combn(inc.cols, k)
+  for(i in 1:ncol(comb.k)) {
+    cols.ki = c("audience_score", comb.k[,i])
+    data = movies[,(names.mov %in% cols.ki)]
+    lm.ret = lm(audience_score ~ ., data=data)
+    rsq = summary(lm.ret)$adj.r.squared
+    if (rsq > max.rsq) {
+      max.rsq = rsq
+      max.cols = cols.ki
+      logmsg("%s: %f", paste(max.cols, collapse=" "), max.rsq)
+    }
+  }
+}
+```
+
+
+<pre>
+2018-11-20 20:03:36: audience_score title_type: 0.096113
+2018-11-20 20:03:36: audience_score genre: 0.181556
+2018-11-20 20:03:36: audience_score critics_score: 0.495228
+2018-11-20 20:03:37: audience_score title_type critics_score: 0.501696
+2018-11-20 20:03:37: audience_score genre critics_score: 0.519651
+2018-11-20 20:03:41: audience_score critics_score director: 0.658982
+2018-11-20 20:03:46: audience_score title_type critics_score director: 0.666131
+2018-11-20 20:04:32: audience_score title_type runtime critics_score director: 0.669011
+2018-11-20 20:04:52: audience_score title_type thtr_rel_day critics_score director: 0.670541
+2018-11-20 20:04:58: audience_score title_type critics_score best_pic_nom director: 0.672611
+2018-11-20 20:08:56: audience_score title_type runtime thtr_rel_year critics_score director: 0.673425
+2018-11-20 20:09:03: audience_score title_type runtime thtr_rel_day critics_score director: 0.677226
+2018-11-20 20:09:13: audience_score title_type runtime critics_score best_actor_win director: 0.677418
+2018-11-20 20:16:38: audience_score runtime thtr_rel_day critics_score best_actor_win director: 0.677905
+2018-11-20 20:27:41: audience_score title_type runtime mpaa_rating critics_score best_actor_win director: 0.679321
+2018-11-20 20:28:31: audience_score title_type runtime thtr_rel_year thtr_rel_day critics_score director: 0.679589
+2018-11-20 20:28:37: audience_score title_type runtime thtr_rel_year critics_score best_actor_win director: 0.679928
+2018-11-20 20:28:59: audience_score title_type runtime thtr_rel_day critics_score best_actor_win director: 0.684690
+2018-11-20 21:24:38: audience_score title_type runtime thtr_rel_year thtr_rel_day critics_score best_actor_win director: 0.685582
+2018-11-20 21:26:06: audience_score title_type runtime thtr_rel_day dvd_rel_day critics_score best_actor_win director: 0.685999
+2018-11-20 21:49:56: audience_score genre mpaa_rating studio critics_score best_pic_nom top200_box director: 0.692764
+2018-11-20 22:02:56: audience_score runtime mpaa_rating studio thtr_rel_month dvd_rel_year critics_score director: 0.698920
+2018-11-20 23:01:29: audience_score title_type runtime mpaa_rating studio thtr_rel_month dvd_rel_year critics_score director: 0.698920
+2018-11-21 00:18:48: audience_score runtime mpaa_rating studio thtr_rel_month dvd_rel_year critics_score top200_box director: 0.704928
+</pre>
+
+We can see that the last combination exceeds 70% of adjusted $R^2$, but sadly it presented the prediction limitations already mentioned. Because of this, I turned out my attention to numerical variables only; hoping that it would make my life easier on this very first practical exercise.
+Next subsection provides further details.
+
+#### Part 2.2: The question itself
+
+When restricting our attention to numerical variables only, the number of options are not abundant; but the one that made more sense was the following. The site Rotten Tomatoes has a couple of scores, the audience_score and the critics_score (aka tomatometer). On the other hand IMDB has a single score, and while its details are not public, it is known that it takes as input the scores of any user that uses such website. This presumes that it will implicitly consider both regular users as well as critics.
+
+On the above context, an interesting question could be: can we predict the IMDB score given the two scores provided by Rotten Tomatoes? 
+
+The resulting model of this question could be used, for example, by IMDB to provide a temporary score meanwhile it gets users ratings. 
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+Let us begin by picking just the columns that we need and ensure we have valid data there:
+
+```{r data}
+data = movies %>%
+       select("title", "imdb_rating", "critics_score", "audience_score") %>%
+       na.omit()
+```
+
+Now, we would like to generate that nice matrix shown in several places,
+where on the right side we can see the scatter plot of all possible combinations; while on the left side we can see the correlation coefficients proportional to their magnitude. The first part is easy with the "pairs" function in R, but for the second part we needed to research a bit more in Internet and stole some snippets. Whole thing lies below:
+
+```{r cor mat}
+# Correlation panel
+panel.cor <- function(x, y){
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- round(cor(x, y), digits=2)
+  txt <- paste0("R = ", r)
+  cex.cor <- 0.8/strwidth(txt)
+  text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+
+# Customize upper panel
+upper.panel<-function(x, y){
+  points(x, y, pch = 19)
+}
+
+# Create the plots
+pairs(~imdb_rating + critics_score + audience_score, 
+      data=data,
+      lower.panel = panel.cor,
+      upper.panel = upper.panel)
+```
+
+We can see that individually, both explanatory variables have a strong linear relationship with the output variable. We can see also that the two explanatory variables themselves, also have this property among each other (co-linear). However, the relation between them is not as strong as with the output variable; and for the sake of finishing our experiment we will ignore a bit this fact. Ultimately, the scatter plot between the explanatory variables makes sense, as some people in the audience may think as a critic as well. But we believe that keeping both inputs makes sense in the long term (specially when prediction comes).
+
+Below we will proceed to validate the 3 requirements for the linear regression to be proper, however, just like in the course we will do it  for each individual variable (even though our final model will have multiple variables). This is both due nicer diagrams, but also aiming to "fit" our development into the template imposed here. It would look strange to talk about data analysis using the final model, which has its own section later. Going further, we could say that the course does not detail much how to perform similar analysis for the multi-variate case.
+
+Above plot serves to validate the first requirement for linear regression: linearity. On purpose we have not mentioned much about the correlation coefficient $R$, as we prefer to do so in next sections (along with the modeling). For now, we will use the second way to validate the linearity: residual plots. For that purpose we will anticipate a bit the models, but just temporary ones that only use one variable and just for the sake of getting easy access to the residuals. We also use this opportunity to take a closer look at the scatter plots, in the context of the fitted model:
+
+```{r cond lin2}
+par(mfrow=c(1, 2))
+plot(data$audience_score, data$imdb_rating,
+     xlab="Audience Score (RT)", ylab="IMDB Rating", 
+     main="Scatter plot for audience score")
+model.audience_score = lm(imdb_rating ~ audience_score, data=data)
+abline(model.audience_score)
+
+res.audience_score = resid(model.audience_score)
+plot(data$audience_score, res.audience_score, 
+     xlab="Audience Score (RT)", ylab="IMDB Rating", 
+     main="Residuals plot for audience score")
+abline(h=0)
+
+model.critics_score = lm(imdb_rating ~ critics_score, data=data)
+plot(data$critics_score, data$imdb_rating, data=data,
+     xlab="Critics Score (RT)", ylab="IMDB Rating", 
+     main="Scatter plot for critics score")
+abline(model.critics_score)
+
+res.critics_score = resid(lm(imdb_rating ~ critics_score, data=data))
+plot(data$critics_score, res.critics_score, 
+     xlab="Critics Score (RT)", ylab="IMDB Rating", 
+     main="Residuals plot for critics score")
+abline(h=0)
+```
+
+While audience_score's scatter plot looks like a superior predictor and the critics_score's residuals plot shows more randomness, we can say that both explanatory variables meet the condition: scatter plot looks linear while the residuals look random around zero. 
+
+Anticipating the third requirement for the linear regression to be "propa" (ever seen Lui Marco?), we could also say that the residuals look constant; in the sense of being contained within a band. We definitely do not see a pattern in the residuals, where the container for the values grows or diminishes somehow.
+
+The pending requirement to check is the residuals being normally distributed. For this we will plot both a histogram and a normal plot, for each one of the explanatory variables residuals:
+
+```{r cond lin3}
+par(mfrow=c(1, 2))
+
+hist(resid(model.audience_score),
+     main="Residuals for audience score")
+
+qqnorm(resid(model.audience_score), main="QQ Plot for audience score res.")
+qqline(resid(model.audience_score), lwd=2)
+
+hist(resid(model.critics_score),
+     main="Residuals for critics score")
+
+qqnorm(resid(model.critics_score), main="QQ Plot for critics score res.")
+qqline(resid(model.critics_score), lwd=2)
+```
+
+Here I can sense a bit of conflict: while the critics_score variable seems to have a fairly decent normal shape (not perfect but close), the audience_score has some non trivial deviations. This may suggest, along with the co-linearity previously mentioned, that we shall eliminate the audience_score variable. However, conflicts emerges because we see good prediction results if we keep such variable. Hence, for the sake of completing this project, we will "ignore" the pseudo-normal condition of the audience_score variable and keep it with the model.
+
+* * *
+
+## Part 4: Modeling
+Without further discussion, let us proceed to build the model with our two explanatory variables. Given that we are restricting ourselves to numerical variables, and that these are the only ones, there is no need then to perform a forward nor backward procedure.
+
+```{r model}
+model = lm(imdb_rating ~ audience_score + critics_score, data=data)
+summary(model)
+```
+
+We can see that the p-value is quite small for both explanatory variables, and that the adjusted $R^2$ is quite good: almost 80%
+of the variability of imdb_rating can be attributed to audience_score and critics_score.
+
+As mentioned before, even when the course does not detail much how to extend the requirements verification to the multi-variate case; let us make a humble attempt. At least the residuals, summarized in a single dimension, could be checked for normality:
+
+```{r cond lin3 multi}
+par(mfrow=c(1, 2))
+
+hist(resid(model), main="Residuals for whole model")
+
+qqnorm(resid(model), main="QQ Plot for model's residuals")
+qqline(resid(model), lwd=2)
+```
+
+Looks like the audience_score "flaws", regarding normality, got inherited by the whole model; not surprising we would say. But we remember having ignored that particular problem, for the sake of completing this exercise; and because the predictions do not look bad at all.
+
+* * *
+
+## Part 5: Prediction
+
+For the prediction part I wanted to go further the assignment, and evaluate my model against as many movies as possible. Unfortunately, the dataset from Rotten Tomatoes is not public anymore; one needs to request access first and so far my request has not been attended.
+
+Looking for alternatives for gaining access to many movies records, I found an <a href="https://github.com/mircealex/Movie_ratings_2016_17/">interesting dataset</a> made available by Alex Olteanu. I processed a bit such data set and created a test dataset for this project. Below the relevant code to retrieve the and cook the test data:
+
+```{r pred}
+test.url = "https://drive.google.com/uc?export=download&id=1hksqmU2nC-VswYFkyT1n9uy0WT81UDDH"
+
+test.data = read.csv(url(test.url))
+
+nrow(test.data)
+
+head(test.data)
+```
+
+As it can be observed, the testing dataset contains only a simplified version of the movie's title; as well as the 3 numeric variables that we used for this project. We have a total of 214 movies to play with. Is not visible in the commands above, but the <a href="https://github.com/mircealex/Movie_ratings_2016_17">project link</a> can be consulted to confirm that the years covered are 2016 and 2017. This is great for our purposes, as the training data is not newer than 2014; which means that the training and testing datasets are disjoint. 
+
+Let us proceed to make the predictions now, for each one of these testing movies, and evaluate the associated error. Actually, on the course we did not review much the techniques to evaluate the predictions; but we make a best-effort attempt here with the tools we already know:
+
+
+```{r pred eval}
+pred = predict(model, test.data)
+
+error = abs(test.data$imdb_rating - pred)
+
+summary(error)
+
+hist(error, main="Histogram for the prediction error")
+
+boxplot(error, main="Boxplot for the prediction error")
+
+quantile(error, 0.90)
+```
+
+From the different statistics we gathered above, we can see the third quartile is around 0.52; which means that for 75% of the test data we make an error of around one half of a point! Not bad for the first project, hehe.
+
+Furthermore, the 90% quantile is around 0.75; which means that for 90% of the testing movies we made an error of 3/4 of a point. Again, not that bad.
+
+* * *
+
+
+## Part 6: Conclusion
+
+The intuition that the Rotten Tomatoes scores (audience and critics), could predict the IMDB ones, seems confirmed to a considerable extent by the results gotten on prediction stage. However, let us not forget that the sample itself may not be random; as the movies available on these sites may be biased towards certain types. That is alright though, as our intention was confined to predict one site's score in function of the other.
+
+There is a little bitter flavor here though, regarding the fact that we could only work with numerical variables. This is because, despite the humble efforts here to include the categorical variables, the resulting models were quite bad for predicting. 
+
+I asked some colleges, who have been doing Data Science for some time, and they suggested me further techniques involving things like generalized linear regression and LASSO. I also searched further the Internet and found resources suggesting that one converts, due some pre-processing, these categorical variables into numerical ones. 
+
+Ultimately, I believe that in order to cope with real life problems, involving linear regression, one must study further other techniques and tools. The introduction reviewed in this course is great, but it seems to be just the peak of a huge mountain under the deep waters of Statistics. 
+
+
+
+

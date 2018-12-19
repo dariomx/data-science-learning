@@ -1,0 +1,210 @@
+---
+title: "Modeling and prediction for movies"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+    
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(statsr)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `movies`. Delete this note when before you submit 
+your work. 
+
+```{r load-data}
+load("movies.Rdata")
+```
+
+
+
+* * *
+
+## Part 1: Data
+The data set is comprised of 651 randomly sampled movies produced and released before 2016. The sample itself was taken using APIs from
+Rotten Tomatoes and IMDB; hence, the quality of our sample in turn depends on the quality of those catalogs; meaning, whether they truly have a representative subset of all movies ever made.
+
+Above means that the results, that is the model, may not be suitable to
+predict about movies which were not represented by the potentially. 
+
+
+* * *
+
+## Part 2: Research question
+
+Disclaimer: I based my analysis on the adjusted $R^2$ method, as well as the predictive performance of the resulting models.
+
+#### Part 2.1: History of the question
+
+The research question has a long history behind, as I tried a lot of things before picking both the question and the model itself. Presenting all the glory details may be cumbersome to the reader, hence I will proceed to summarize instead.
+
+I initially wanted to have as question the following: what is the best model that predicts the audience_score variable? The applicability of such model seems natural: being able to anticipate whether people will like a movie or not, before scores like those of Rotten Tomatoes become available. 
+
+There were several problems associated with such question, but the main one was the usefulness of the generated models: they simply did not predict properly; the predicted audience_score was always very close to 70, regardless of whether the true score was much lower or higher. 
+
+The inclusion of categorical variables made the analysis complex, as the summaries of the model were quite verbose and its contribution was not very clear. While they certainly increased the adjusted $R^2$, they did not seem to improve the predictive capability of the model. This situation maintained even after doing a brute-force search of the best combination of variables, which maximized the adjusted $R^2$. Just for completeness we present below the output of such grid-search:
+
+<pre>
+2018-11-20 20:03:36: audience_score title_type: 0.096113
+2018-11-20 20:03:36: audience_score genre: 0.181556
+2018-11-20 20:03:36: audience_score critics_score: 0.495228
+2018-11-20 20:03:37: audience_score title_type critics_score: 0.501696
+2018-11-20 20:03:37: audience_score genre critics_score: 0.519651
+2018-11-20 20:03:41: audience_score critics_score director: 0.658982
+2018-11-20 20:03:46: audience_score title_type critics_score director: 0.666131
+2018-11-20 20:04:32: audience_score title_type runtime critics_score director: 0.669011
+2018-11-20 20:04:52: audience_score title_type thtr_rel_day critics_score director: 0.670541
+2018-11-20 20:04:58: audience_score title_type critics_score best_pic_nom director: 0.672611
+2018-11-20 20:08:56: audience_score title_type runtime thtr_rel_year critics_score director: 0.673425
+2018-11-20 20:09:03: audience_score title_type runtime thtr_rel_day critics_score director: 0.677226
+2018-11-20 20:09:13: audience_score title_type runtime critics_score best_actor_win director: 0.677418
+2018-11-20 20:16:38: audience_score runtime thtr_rel_day critics_score best_actor_win director: 0.677905
+2018-11-20 20:27:41: audience_score title_type runtime mpaa_rating critics_score best_actor_win director: 0.679321
+2018-11-20 20:28:31: audience_score title_type runtime thtr_rel_year thtr_rel_day critics_score director: 0.679589
+2018-11-20 20:28:37: audience_score title_type runtime thtr_rel_year critics_score best_actor_win director: 0.679928
+2018-11-20 20:28:59: audience_score title_type runtime thtr_rel_day critics_score best_actor_win director: 0.684690
+2018-11-20 21:24:38: audience_score title_type runtime thtr_rel_year thtr_rel_day critics_score best_actor_win director: 0.685582
+2018-11-20 21:26:06: audience_score title_type runtime thtr_rel_day dvd_rel_day critics_score best_actor_win director: 0.685999
+2018-11-20 21:49:56: audience_score genre mpaa_rating studio critics_score best_pic_nom top200_box director: 0.692764
+2018-11-20 22:02:56: audience_score runtime mpaa_rating studio thtr_rel_month dvd_rel_year critics_score director: 0.698920
+2018-11-20 23:01:29: audience_score title_type runtime mpaa_rating studio thtr_rel_month dvd_rel_year critics_score director: 0.698920
+2018-11-21 00:18:48: audience_score runtime mpaa_rating studio thtr_rel_month dvd_rel_year critics_score top200_box director: 0.704928
+</pre>
+
+
+
+
+
+#### Part 2.2: The question itself
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
+button above. Make sure that your code is visible in the project you submit. 
+Delete this note when before you submit your work.
+
+* * *
+
+## Part 4: Modeling
+
+NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
+button above. Make sure that your code is visible in the project you submit. 
+Delete this note when before you submit your work.
+
+* * *
+
+## Part 5: Prediction
+
+NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
+button above. Make sure that your code is visible in the project you submit. 
+Delete this note when before you submit your work.
+
+* * *
+
+## Part 6: Conclusion
+
+```{r ora.data}
+load("movies.Rdata")
+drop.cols = c("title", "imdb_url", "rt_url", "audience_rating",
+              "imdb_rating", "imdb_num_votes", "critics_rating")
+data = movies[,!(names(movies) %in% drop.cols)]
+data = as.data.frame(data)
+ore.drop(table="omovies")
+ore.create(data, table="omovies")
+
+drop.cols.act = c(drop.cols,
+                  "actor1", "actor2", "actor3", "actor4", "actor5")
+data = movies[,!(names(movies) %in% drop.cols.act)]
+data = as.data.frame(data)
+ore.drop(table="omovies_act")
+ore.create(data, table="omovies_act")
+```
+
+
+```{r oraai}
+drop.cols = c("title", "imdb_url", "rt_url", "audience_rating",
+              "imdb_rating", "imdb_num_votes", "critics_rating")
+data = movies[,!(names(movies) %in% drop.cols)]
+ore.create(data, table="movies")
+ai.data = ore.push(data)
+ai.ret = ore.odmAI(audience_score ~ ., data=ai.data, auto.data.prep=TRUE)
+print(ai.ret)
+```
+
+```{r ora.lm} 
+drop.cols = c("title", "imdb_url", "rt_url", "audience_rating",
+              "imdb_rating", "imdb_num_votes", "critics_rating")
+data = movies[,!(names(movies) %in% drop.cols)]
+lm.data = ore.push(data)
+lm.ret = ore.lm(audience_score ~ ., data=lm.data)
+summary(lm.ret)
+```
+
+```{r ora.stepwise} 
+drop.cols = c("title", "imdb_url", "rt_url", "audience_rating",
+              "imdb_rating", "imdb_num_votes", "critics_rating")
+data = movies[,!(names(movies) %in% drop.cols)]
+sw.data = ore.push(data)
+sw.ret = ore.stepwise(audience_score ~ ., data=sw.data, direction="none")
+summary(sw.ret)
+```
+
+```{r r.lm} 
+drop.cols = c("title", "imdb_url", "rt_url", "audience_rating",
+              "imdb_rating", "imdb_num_votes", "critics_rating")
+data = movies[,!(names(movies) %in% drop.cols)]
+lm.ret = lm(audience_score ~ ., data=data)
+summary(lm.ret)
+```
+
+```{r r.lm2} 
+inc.cols = c("audience_score", 
+             "runtime", "genre", "mpaa_rating", 
+             "critics_score", "best_pic_nom", "top200_box",
+             "studio", "director", 
+             "dvd_rel_year", "thtr_rel_month"
+             )
+data = movies[(names(movies) %in% inc.cols)]
+lm.ret = lm(audience_score ~ ., data=data)
+summary(lm.ret)$adj.r.squared
+```
+
+```{r ora.lm3, class.source="darkCode"} 
+drop.cols = c("title", "imdb_url", "rt_url", "audience_rating",
+              "imdb_rating", "imdb_num_votes", "critics_rating",
+              "actor1", "actor2", "actor3", "actor4", "actor5", 
+              "audience_score")
+names.mov = names(movies)
+inc.cols = names.mov[!(names.mov %in% drop.cols)]
+max.rsq = 0
+max.cols = NULL
+for(k in 1:length(inc.cols)) {
+  comb.k = combn(inc.cols, k)
+  for(i in 1:ncol(comb.k)) {
+    cols.ki = c("audience_score", comb.k[,i])
+    data = movies[,(names.mov %in% cols.ki)]
+    lm.ret = lm(audience_score ~ ., data=data)
+    rsq = summary(lm.ret)$adj.r.squared
+    if (rsq > max.rsq) {
+      max.rsq = rsq
+      max.cols = cols.ki
+      logmsg("%s: %f", paste(max.cols, collapse=" "), max.rsq)
+    }
+  }
+}
+```
+
