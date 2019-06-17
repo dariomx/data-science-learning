@@ -1,0 +1,358 @@
+## Setup
+```{r results='asis', echo=FALSE, include=FALSE,}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+```
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(statsr)
+library(BAS)
+```
+
+* * *
+
+## Part 1: Data
+
+We can discard causality discussion right away, as this study was observational (no experiment was performed). Hence pending question is whether we can generalize the results we get in this project.
+
+The dataset description talks about random sampling, although does not describe what particular technique was used. Hence at first glance we could say that we can generalize the results obtained from our bayesian inference, to a wider population. But how wide that population could be?
+
+The sampling could be biased; the sources are the well known Rotten Tomatoes and IMDB sites. Even if we forget the fact that not everyone has Internet or computer access, we could tell that not everyone has the habit of reporting scores on these sites. I think that at most we could say something like this: these data is representative of the sector of the population with similar characteristics as the regular users of these sites; therefore, any result obtained in the fore-coming inference can only be generalized to them but not beyond. 
+
+* * *
+
+## Part 2: Data manipulation
+
+Let us proceed to create the requested derived variables:
+```{r data-manip}
+library(dplyr, warn.conflicts = FALSE)
+
+load('movies.Rdata')
+
+yes_if = function(x, vals) ifelse(x %in% vals, 'yes', 'no')
+oscar_months = c(10, 11, 12)
+summer_months = c(5, 6, 7, 8)
+
+pre_proc <- function(df) {
+    df %>% 
+        mutate(feature_film = yes_if(title_type, 'Feature Film'),
+               drama = yes_if(genre, 'Drama'),
+               mpaa_rating_R = yes_if(mpaa_rating, 'R'),
+               oscar_season = yes_if(thtr_rel_month, oscar_months),
+               summer_season = yes_if(thtr_rel_month, summer_months))
+}
+
+movies = pre_proc(movies)
+```
+
+
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+In principle we could use two types of tools for this job, plots and summary statistics. However, given that all variables are categorical we do not have many options; at least not covered during this course. We could use a bar-plot and a box-plot for exploring the relationship between audience_score and each of the new variables. 
+
+Given we will use same plots multiple times, let us code a generic routine that we can reuse for each variable. Let us plot them all together, and comment afterwards:
+
+```{r explor-vars-rout}
+
+explore_var = function(varname) {
+    par(mfrow=c(1,2))
+    title = sprintf("barplot for %s", varname)
+    x = movies[,varname]    
+    heights = table(x) / nrow(x)
+    barplot(heights, main=title, names.arg=c("no", "yes"),
+            ylab="audience_score", xlab=varname)
+    formula = as.formula(paste("audience_score ~", varname))
+    title = sprintf("boxplot for %s", varname)
+    boxplot(formula=formula, data=movies, main=title, 
+            ylab="audience_score", xlab=varname)
+}
+
+```
+
+#### feature_film
+
+```{r feature_film-vis}
+explore_var("feature_film")
+```
+
+We can see that the box-plot reveals this could be a good predictor, as the distribution of audience_score is different for each categorical value. However, we can also see that most of the movies have values "yes" (around 90% percent); hence, most of the time this variable will not help us to predict.
+
+#### drama
+
+```{r drama-vis}
+explore_var("drama")
+```
+
+This variable shows a good balance between plots: on left side we can see an even distribution of values between "no" and "yes" values, which means that most of the time we can rely on a distinctive contribution for out model. On the right side as well, we can see that the distributions are sufficiently different to tell that it could be a good predictor.
+
+#### mpaa_rating_R
+
+```{r mpaa_rating_R-vis}
+explore_var("mpaa_rating_R")
+```
+
+On the left side we can see a fair distribution of values, which means that most of the time we can rely on getting a different value for this variable (which in turn, opens the door to make it a predictor). On the right side though, we can see the medians and overall distributions are quite similar for this variable. Ultimately this would mean that audience_score is kinda independent of having R rating.
+
+#### oscar_season
+
+```{r oscar_season-vis}
+explore_var("oscar_season")
+```
+
+This variable looks like a mild predictor: the distribution of values looks unbalanced (70% vs 30%) although not to the extreme of feature_film. The median score looks a bit higher for oscar_season=yes movies, shifting the distribution for that case; suggesting this has potential for being a predictor.
+
+#### summer_season
+
+```{r summer_season-vis}
+explore_var("summer_season")
+```
+
+The situation would be quite similar than for mpaa_rating_R, meaning that this variable does not seem to have prediction power over audience_score (distributions over categorical values are quite similar).
+
+
+* * *
+
+## Part 4: Modeling
+
+For coming up with a Bayesian model, we need to specify a prior for
+the parameters. During the course it was mentioned that AIC tended to produce better predictive models than BIC. It would be interesting to put this 
+claim under test, with the concrete movies we want to predict in the
+next step. Let us begin by building both artifacts, note that on each
+case we are using same prior distribution for the models (uniform). Note that we are picking default computation method, which is to enumerate all possible models; this seems tractable for our exercise, as variable number is not in the hundreds nor thousands:
+
+```{r model-sel}
+mov_formula = audience_score ~ feature_film + drama + runtime + 
+                 mpaa_rating_R + thtr_rel_year + oscar_season + 
+                 summer_season + imdb_rating + imdb_num_votes +
+                 critics_score + best_pic_nom + best_pic_win + 
+                 best_actor_win + best_actress_win + best_dir_win +
+                 top200_box
+
+model_aic = bas.lm(formula=mov_formula, data=movies, 
+                   prior="AIC", modelprior=uniform())
+
+model_bic = bas.lm(formula=mov_formula, data=movies, 
+                   prior="BIC", modelprior=uniform())
+```
+
+There are many available visualizations for the resulting models, 
+but we do not want to include them all just for the sake of it; cause
+they may make the report verbose and tedious to review. Let us present
+instead just the plots or summaries we consider more relevant, which
+in this was case the plot of top models per colors vs included variables:
+
+```{r model-sel2}
+image(model_aic, rotate=F)
+image(model_bic, rotate=F)
+```
+
+Putting aside the intercept, we can see that best models for both AIC and BIC include numerical variables runtime, imdb_rating and critics_score. However, the AIC model includes additional variables mpaa_rating_R, thtr_rel_year, best_pic_nom, best_actor_win and best_actress_win. This matches the expectation that BIC tends to build parsimonious models, aka, with as few predictor variables as possible. 
+
+Let us visualize the probability of not including each variable, for the AIC case; this is because we are aiming to pick that as our winner prior technique (although we keep in mind the BIC model for comparison purposes):
+
+```{r mod-sel3}
+plot(coef(model_aic), ask=F, subset=c(1,4,5,6,9,11,12,13,14))
+```  
+
+Again, as theory anticipated, the variables where AIC and BIC match do have low probabilities of being discarded (runtime, imdb_rating and critics_score). The rest have quite high probabilities, suggesting they are not statistically significant. Still, the thesis is that they may play a role to produce better prediction results (which is our ultimate goal). Hence we ignore those high exclusion probabilities for the sake of predicting power.
+
+Another validation we gotta make is the residuals for both AIC and BIC:
+
+```{r mol-sel4}
+plot(model_aic, add.smooth=F, which=1)
+plot(model_bic, add.smooth=F, which=1)
+```
+
+To be totally fair, both AIC and BIC seem to fall short when it comes to residuals plot shape. Theory says that residuals should spread kind of randomly, without variable variability; but in both cases a pattern emerges that seems to shrink the residuals as we move to the right. At this point, in real life, we would probably go back and use other techniques, as none of these priors selections seems satisfactory. But for the scope of this exercise, we kinda ignore and move on, as we do not really have much in our arsenal of tools.
+
+Last but not least, we need to interpret the coefficients of our model; let us do that in the context of confidence intervals, which would also tell us if we are including a zero or not in the range (which in turn, kinda suggests whether we can plug-off such variable or not):
+
+```{r mod-sel5}
+confint(coef(model_aic))
+```
+
+Let us try to interpret these numbers from the problem perspective, putting attention only to the best model given by AIC:
+
+1. runtime has a confidence interval of approx. [-0.009, 0], which does not include zero, suggesting that it is unlikely we can remove it from our model (more on this in a bit). The coefficient value itself is around -0.047, which tells us that audience_score increases as runtime decrease; in other words, that people do not like long movies. The absolute value of the coefficient is quite small though, around 0.05, thus this punishment of runtime, while present, is small. Let us recall too, that from all the included variables; runtime had the biggest non-inclusion probability. Then, the initial claim that this variable is important, while still might be true, is also likely to be on the "edge". Meaning that this variable is kinda in-between the worlds of useful and not-useful predictors.
+
+2. imdb_rating has a confidence interval of approx. [13.7, 16.2], which is far from including zero (with 95% probability). This makes it the best predictor by far, and this is reflected in its coefficient  ~ 15. This value says something like: for each point given in IMDB, the audience_score in Rotten Tomatoes raises by 15 points. The scale of IMDB is from 1 to 10, while Rotten Tomatoes is from 1 to 100; thus the scale of this coefficient makes sense indeed (mapping from one to the other needs to add one figure). What is probably more interesting, is that coefficient is around 15 and not just 10; this means that the mapping between the final score of both sides is not direct, as IMDB score seems to "weight more" than the Rotten Tomatoes one.
+
+3. critics_score has a 95% changes of being in [0, 0.1], which surprisingly includes zero. Not sure how to reconcile that with the plot of no-inclusion probability for same variable, which was kind of low. The coefficient is positive but quite small, around 0.06; this would mean that, while critics opinion is important and can raise audience_score, it does that by a minimal degree. This matches reality, top-selling movies do not tend to be favored by critics, who do not care much about special effects or chiché stories.
+
+4. mpaa_rating_R (yes) coefficient has confidence interval [-2.8, 0.002]; which includes zero. But this does not surprise us, as BIC best model did not include it; also because its no-inclusion probability was quite high. Same reasoning will apply to all variables not shared between AIC and BIC best models, thus we will not repeat in next paragraphs to avoid redundant comments. The coefficient is around -1.02, suggesting that people punishes a bit R-rated movies. 
+
+5. thtr_rel_year has a coefficient of ~ -0.03, suggesting that audience_score grows in opposite direction with time; meaning that people tend to score higher older movies. But the amount of such punishment is not that big, thus nostalgic attitudes are relevant but not determinant in isolation. 
+
+6. best_pic_nom (yes) is an interesting variable, specially if we compare it with the not-considered best_pic_win(yes). The former is part of our best AIC model, and has a coefficient of ~ 3.23; this means that a movie which was nominated to the best-movie Oscar has a bit more than 3 points in the audience score. This matches again experiences in real life, where we clearly realize the big influence that Hollywood industry and its Oscar ritual has in the audiences; millions around the world pay attention to those nominations. On the other side of the coin, if the movie actually won best-movie Oscar (best_pic_win=yes), then the coefficient becomes negative! (~ -0.5). Not sure how to interpret this, as goes a bit against intuition; why would people score half a point less to best-movies per Oscars? Perhaps due big expectations such title creates on people, but not sure.
+
+7. Related to the above, best_actor_win(yes) and best_actress_win(yes) are also curious. Both are negative, suggesting that people "punishes" the movies whose actors won the Oscar; maybe again, due high expectations? The absolute value is small for the 100 scale of Rotten Tomatoes, but is still interesting that Oscars winners variables get these negative coefficients. Another interesting finding, is that this "punishment" depends on the actor gender; males get around 30% less punishment than females.
+
+## Part 5: Prediction
+
+For the prediction part, where beyond this exercise we self-added the question of whether AIC really made better prediction than BIC; we grabbed 5 films for testing. We expect that this small set, still represents a good sample of very different genres and scores; though we did not use random sampling to get it, rather tried to pick movies that would exercise different variables. Information was pulled our of IMDB and Rotten Tomatoes sites:
+
+```{r pred1}
+american_sniper = data.frame(title='American Sniper',
+                             audience_score=72,
+                             critics_score=84,
+                             genre='Drama',
+                             mpaa_rating='R',
+                             title_type="Feature Film",
+                             runtime=134,                             
+                             imdb_rating=7.3,
+                             imdb_num_votes=401897,
+                             thtr_rel_year=2015,
+                             thtr_rel_month=01,
+                             best_pic_nom="yes",
+                             best_pic_win="no",
+                             best_actor_win="no",
+                             best_actress_win="no",
+                             best_dir_win="no",
+                             top200_box="no")
+
+revenant = data.frame(title='The Revenant',
+                             audience_score=78,
+                             critics_score=84,
+                             genre='Drama',
+                             mpaa_rating='R',
+                             title_type="Feature Film",
+                             runtime=156,                             
+                             imdb_rating=8.0,
+                             imdb_num_votes=621133,
+                             thtr_rel_year=2015,
+                             thtr_rel_month=12,
+                             best_pic_nom="yes",
+                             best_pic_win="no",
+                             best_actor_win="yes",
+                             best_actress_win="no",
+                             best_dir_win="yes",
+                             top200_box="no")
+
+three_billboards = data.frame(title='Three Billboards Outside Ebbing, Missouri',
+                              audience_score=91,
+                              critics_score=87,
+                              genre='Comedy',
+                              mpaa_rating='R',
+                              title_type="Feature Film",
+                              runtime=115,                             
+                              imdb_rating=8.2,
+                              imdb_num_votes=343993,
+                              thtr_rel_year=2017,
+                              thtr_rel_month=12,
+                              best_pic_nom="yes",
+                              best_pic_win="no",
+                              best_actor_win="no",
+                              best_actress_win="yes",
+                              best_dir_win="no",
+                              top200_box="no")
+
+shoplifters = data.frame(title='Shoplifters',
+                         audience_score=99,
+                         critics_score=90,
+                         genre='Drama',
+                         mpaa_rating='R',
+                         title_type="Feature Film",
+                         runtime=121,                             
+                         imdb_rating=8.0,
+                         imdb_num_votes=31203,
+                         thtr_rel_year=2018,
+                         thtr_rel_month=11,
+                         best_pic_nom="no",
+                         best_pic_win="no",
+                         best_actor_win="no",
+                         best_actress_win="no",
+                         best_dir_win="no",
+                         top200_box="no")
+
+alpha = data.frame(title='Alpha',
+                   audience_score=79,
+                   critics_score=71,
+                   genre='Action & Adventure',                   
+                   mpaa_rating='PG-13',
+                   title_type="Feature Film",
+                   runtime=97,                             
+                   imdb_rating=6.7,
+                   imdb_num_votes=41873,
+                   thtr_rel_year=2018,
+                   thtr_rel_month=08,
+                   best_pic_nom="no",
+                   best_pic_win="no",
+                   best_actor_win="no",
+                   best_actress_win="no",
+                   best_dir_win="no",
+                   top200_box="no")
+                   
+test_movies = rbind(american_sniper, revenant, three_billboards,
+                    shoplifters, alpha)
+test_movies = pre_proc(test_movies)
+```
+
+Let us now compute the predictions for both AIC and BIC, using Best Predictive Model (BPM) as estimator; and build a table to visualize and compare the predictive performance of AIC and BIC:
+
+```{r pred2}
+pred_aic = predict(model_aic, newdata=test_movies,
+                   estimator="BPM", se.fit=TRUE)
+test_movies$pred_aic = pred_aic$fit
+test_movies$err_aic = abs(test_movies$audience_score - pred_aic$fit)
+
+pred_bic = predict(model_bic, newdata=test_movies,
+                   estimator="BPM", se.fit=TRUE)
+test_movies$pred_bic = pred_bic$fit
+test_movies$err_bic = abs(test_movies$audience_score - pred_bic$fit)
+
+test_movies[c("title", "pred_aic", "pred_bic", "err_aic", "err_bic")]
+mean(test_movies$err_aic)
+mean(test_movies$err_bic)
+```
+
+Overall AIC gives ~ 8.2 average prediction error and BIC gives ~ 7.4. Both seem kind of decent, considering the scale of the score (1 - 100). But it is surprising that theory was not reflected on the result; AIC was supposed to produce a better model for prediction, although BIC was slightly better. Could Bayesian Model Averaging (BMA) estimate have changed the result? Let us figure it out:
+
+```{r pred3}
+pred_aic2 = predict(model_aic, newdata=test_movies,
+                   estimator="BMA", se.fit=TRUE)
+test_movies$pred2_aic = pred_aic2$fit
+test_movies$err2_aic = abs(test_movies$audience_score - pred_aic2$fit)
+
+pred_bic2 = predict(model_bic, newdata=test_movies,
+                   estimator="BMA", se.fit=TRUE)
+test_movies$pred2_bic = pred_bic2$fit
+test_movies$err2_bic = abs(test_movies$audience_score - pred_bic2$fit)
+
+test_movies[c("title", "pred_aic", "pred_bic", "err_aic", "err_bic")]
+mean(test_movies$err2_aic)
+mean(test_movies$err2_bic)
+```
+
+We can observe that the result does not change much, hence, we should probably stick to the best model by BIC; which only includes the runtime, imdb_score and critics_score variables. 
+
+## Part 6: Conclusion
+
+The first thing to mention is the frustration that theory does not match practice, at least for these small subset of testing movies that we used. Now, the real issue is the lack of data; as manually tagging those movies is not doable for the scope of this project (simply tagging and preparing 5 movies took at least one hour, if not more). Ideally, we should have hundreds of movies, but one issue is the lack of available data; the APIs one could use to produce the desired testing dataset is no longer free (at least for Rotten Tomatoes), such that only older subsets are available (like the one used for training our model). That in my opinion, is the main obstacle for testing the predictive power of our model; specially, for answering our own question of whether AIC was really better than BIC. 
+
+With our small testing dataset we would say BIC does as good, if not better than AIC, specially cause it uses less variables (only the numerical ones, actually). Also, and probably more importantly, we have an average absolute error of less than 8% (assuming we pick BIC); that gives the impression of having a decent predictive model. But let us take with caution this conclusion, in the sense that we are not sure if these results will prevail once we test against much more movies. Another consideration, is that the test dataset is not only small but quite biased; I pretty much picked movies I had seen ;-?
+
+Furthermore, what is the real-life utility of this model? If we focus on the coefficients of the numerical variables for BIC:
+
+```{r conclu}
+confint(coef(model_bic))
+```
+
+And remember that BIC gave us only runtime, imdb_score and critics_score; then we can pretty much see that imdb_score is the only really valuable predictive variable (the contribution of the other two coefficients is quite small). Thus, in the end we are concluding that the audience_score of one site (Rotten Tomatoes) is predictable from the overall score of the other site (IMDB). Let us visualize that with one last plot:
+
+```{r conclu2}
+plot(movies$audience_score ~ movies$imdb_rating)
+abline(lm(movies$audience_score ~ movies$imdb_rating))
+cor(movies$audience_score, movies$imdb_rating)
+```
+
+So yeah, there seems to be a strong linear correlation (> 0.8) between these two variables; hence one can sort of predict one with the other using a linear model. But from a real-life perspective, if you have one of them, do you actually need the other? Let us make this question more concrete: say you get access to IMDB data (might be are still free), and you want to predict Rotten Tomatoes predictions. Since you will have best predictive variable imdb_rating available, you can certainly do it ... but why would you? 
+
+One potential use-case I can think of, is that the Rotten Tomatoes owners want to give a prediction for the audience_score even when there are no votes yet; that may bring some value to them and could be a real-life justification for an effort of this nature. Although, to be very fair, in real-life we would not restrict ourselves to the methods used during this course; we would rather leverage any available tool, Bayesian or not, which produces the best predictions. 
+
+
