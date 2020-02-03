@@ -1,0 +1,4 @@
+Let n = len(post_data) and m = len(pre_data). Assuming that the kd-tree
+or similar data structures used by the underlying APIs, provide logarithmic
+query times, then overall complexity will be O(n * log(m))
+

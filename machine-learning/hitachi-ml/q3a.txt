@@ -1,0 +1,30 @@
+I would use a confidence interval, say with 95 confidence level, around the
+percentage of items with such defect. Looks like I have all the ingredients,
+the interval itself would be:
+
+p +/- z * SE = [0.05105476962852627, 0.09694523037147372] ~ [0.05, 0.1]
+
+where
+
+p = point estimate of the percentage, in our case that is the percentage
+of defective items from the sample, that is, 37/500 = 0.074.
+
+z = associated quantile for the normal distribution, which for 95% confidence
+level (are under curve), shall be around points associated with 0.025. This
+value is roughly 1.96
+
+SE = standard error for the particular case of proportions. I believe this
+is derived from the Central Limit Theorem, under some assumptions which I
+will take as granted now for the sake of time (noon is approaching!). Hence,
+under those assumptions we can consider that the proportion of items with
+the defect behaves like a normal distribution; and that allows to use this
+whole inferential framework, including this formula:
+
+SE = sqrt((p * (1-p)) / n) = 0.011706750189527408 ~ 0.012
+
+where n = sample size ... mmm, but we are not using population size?
+Usually on the examples where I learned this technique, the total population
+population size was unknown, but here I know it and thus sort of wasting it.
+But let us forget that for a minute, cause again, time is short and gotta
+deliver this.
+

@@ -1,0 +1,14 @@
+The heads seem to be naturally grouped per their ranges of temperature. We
+can observe at least three ranges across both files:
+
+group1: 164287
+group2: 152109, 164371
+group3: 152133, 164361
+
+If we were for example, to build a linear model aiming to predict the temperature
+at a given time; it would be probably better to do that per group. Mmm, actually,
+we may just rather do it per head; that may be a more accurate model.
+
+Trying to force a single model to deal with all these data may not be a good idea,
+as the temperatures are clearly in disconnected ranges.
+

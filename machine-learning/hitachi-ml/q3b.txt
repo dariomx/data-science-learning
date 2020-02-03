@@ -1,0 +1,15 @@
+Yes, there is a level of uncertainty here, which can be appreciated by
+the formula used:
+
+p +/- z * SE
+
+The term we are adding/substracting, z * SE, is usually called uncertainty
+(well, well, at least in the context of tolerance intervals for normal data).
+In particular the term z (z-score), depends on the confidence level we chose
+to use here (95%). Hence, the more confidence we want for our interval, the
+wider it is gonna become. The interpretation I recall for a confidence interval,
+of confidence level q (say 95%), is that if we repeat the experiment (in this
+case the sample of 500), like may times, thus q percentage of those samples
+will yield a point estimate for our percentage (of detective items), which will
+actually be within our interval.
+
