@@ -70,7 +70,7 @@ def calc_prob(cat, comment, cnt, V):
         for word in V:
             cnt[cat][TOTAL_V] += cnt[cat][word]
     prob = log(cnt[cat][TOTAL])
-    for word in set(comment.split()):
+    for word in comment.split():
         prob += log((cnt[cat][word] + 1) / (cnt[cat][TOTAL_V] + len(V)))
     if prob > 0:  # not enough known words?
         prob = 0
