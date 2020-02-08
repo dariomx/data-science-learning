@@ -14,7 +14,7 @@ let us consider comment a sequence of words (just need that on numerator):
 
 per Naïve Bayes (along with its assumptions):
 
-= p(w1 | cat) * ... * p (wk | cat) * p (cat) / p (comment)
+= p(w1 | cat) * ... * p (wk | cat) * p (cat) / p(comment)
 
 Given that p(comment) = 1/n, with n = #comments
 

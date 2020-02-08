@@ -26,7 +26,7 @@ def calc_counters(data):
         comment = row[COMMENT]
         if type(comment) != str or len(comment) == 0:
             continue  # no words left after normalization
-        words = comment.split()
+        words = set(comment.split())
         for cat in CATLAB:
             if row[cat] == 0:
                 continue
