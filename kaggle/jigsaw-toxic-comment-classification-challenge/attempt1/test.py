@@ -32,6 +32,12 @@ where
 
 p(wi | cat) = cnt[cat][wi] / cnt[cat]
 
+though we end up applying the correction for unknown words:
+
+p(wi | cat) = cnt[cat][wi] + 1 / cnt[cat] + len(V)
+
+where V = vocabulary, aka, set of all words
+
 """
 from collections import defaultdict
 
@@ -47,36 +53,36 @@ PRED_DATA = '../data/attempt1/pred.csv'
 
 def parse_counters(cnt_data):
     cnt = defaultdict(lambda: defaultdict(lambda: 0))
+    V = set()
     for _, row in pd.read_csv(cnt_data).iterrows():
         cat = row[CAT]
         word = row[WORD]
         count = row[COUNT]
         cnt[cat][word] = count
-    return cnt
+        V.add(word)
+    return cnt, V
 
 
-# TODO: do something with unknown words?
-def calc_prob(cat, comment, cnt):
+def calc_prob(cat, comment, cnt, V):
     if len(comment) == 0:
         return 0
     prob = log(cnt[cat][TOTAL])
     for word in comment.split():
-        if word in cnt[cat]:
-            prob += log(cnt[cat][word] / cnt[cat][TOTAL])
+        prob += log((cnt[cat][word] + 1) / (cnt[cat][TOTAL] + len(V)))
     if prob > 0:  # not enough known words?
         prob = 0
     else:
         prob = exp(prob)
     return prob
 
-def predict(data, cnt):
+def predict(data, cnt, V):
     pred = []
     for _, in_row in data.iterrows():
         id = in_row[ID]
         comment = str(in_row[COMMENT])
         out_row = {ID: id}
         for cat in CATLAB:
-            prob = calc_prob(cat, comment, cnt)
+            prob = calc_prob(cat, comment, cnt, V)
             # print('p(%s | %s) = %f' % (cat, comment, prob))
             out_row[cat] = prob
         pred.append(out_row)
@@ -84,7 +90,7 @@ def predict(data, cnt):
 
 
 if __name__ == '__main__':
-    cnt = parse_counters(CNT_DATA)
+    cnt, V = parse_counters(CNT_DATA)
     data = pd.read_csv(TEST_DATA)
-    pred = predict(data, cnt)
+    pred = predict(data, cnt, V)
     pred.to_csv(PRED_DATA, index=False)
