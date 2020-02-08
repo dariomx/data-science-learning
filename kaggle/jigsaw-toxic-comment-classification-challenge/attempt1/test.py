@@ -30,13 +30,13 @@ and to avoid multiplying small quantities:
 
 where
 
-p(wi | cat) = cnt[cat][wi] / cnt[cat]
+p(wi | cat) = cnt[cat][wi] / sum(cnt[cat][wj]), for wj in V
+
+where V = vocabulary, aka, set of all words
 
 though we end up applying the correction for unknown words:
 
-p(wi | cat) = cnt[cat][wi] + 1 / cnt[cat] + len(V)
-
-where V = vocabulary, aka, set of all words
+p(wi | cat) = cnt[cat][wi] + 1 / sum(cnt[cat][wj]) + len(V)
 
 """
 from collections import defaultdict
@@ -66,9 +66,12 @@ def parse_counters(cnt_data):
 def calc_prob(cat, comment, cnt, V):
     if len(comment) == 0:
         return 0
+    if TOTAL_V not in cnt[cat]:
+        for word in V:
+            cnt[cat][TOTAL_V] += cnt[cat][word]
     prob = log(cnt[cat][TOTAL])
     for word in comment.split():
-        prob += log((cnt[cat][word] + 1) / (cnt[cat][TOTAL] + len(V)))
+        prob += log((cnt[cat][word] + 1) / (cnt[cat][TOTAL_V] + len(V)))
     if prob > 0:  # not enough known words?
         prob = 0
     else:
