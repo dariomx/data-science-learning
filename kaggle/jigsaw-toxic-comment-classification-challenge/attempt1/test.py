@@ -24,7 +24,8 @@ but since p(cat) = cnt[cat] / n
 
 = p(w1 | cat) * ... * p (wk | cat) * cnt[cat]
 
-and to avoid multiplying small quantities:
+and to avoid multiplying small quantities, should we do this?
+(nltk does it differently, rather uses normalization ... mmm)
 
 = exp(log p(w1 | cat) + ... + log p (wk | cat) + log cnt[cat])
 
@@ -42,7 +43,6 @@ p(wi | cat) = cnt[cat][wi] + 1 / sum(cnt[cat][wj]) + len(V)
 from collections import defaultdict
 
 import pandas as pd
-from math import log, exp
 
 from common import *
 
@@ -69,14 +69,13 @@ def calc_prob(cat, comment, cnt, V):
     if TOTAL_V not in cnt[cat]:
         for word in V:
             cnt[cat][TOTAL_V] += cnt[cat][word]
-    prob = log(cnt[cat][TOTAL])
+    prob = cnt[cat][TOTAL]
     for word in comment.split():
-        prob += log((cnt[cat][word] + 1) / (cnt[cat][TOTAL_V] + len(V)))
-    if prob > 0:  # not enough known words?
+        prob *= (cnt[cat][word] + 1) / (cnt[cat][TOTAL_V] + len(V))
+    if prob > 1:  # not enough [known] words?
         prob = 0
-    else:
-        prob = exp(prob)
     return prob
+
 
 def predict(data, cnt, V):
     pred = []
