@@ -1,10 +1,13 @@
 # Preprocessing here means converting raw comments into a list of
 # normalized words
+#
+# Disable stemming/lemmarization as they seem not really needed
+# (slightly smaller score with them).
 
 import string
 
 import pandas as pd
-from nltk import sent_tokenize, word_tokenize, PorterStemmer
+from nltk import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 
 IN_OUT = {
@@ -16,21 +19,12 @@ from common import COMMENT
 
 PUNCT_TABLE = str.maketrans('', '', string.punctuation)
 STOP_WORDS = set(stopwords.words('english'))
-STEMMER = PorterStemmer()
-MAX_YS = 'y' * 100
 
 
-# TODO: replaced WordNetLemmatizer by stemmer due things like:
-# lemmatize('ass') => 'as' !
-#
-# The validation against y's prior stemming is due:
-# https://github.com/nltk/nltk/issues/1971
 def norm_word(word):
     word = word.encode('ascii', errors='ignore').decode()
     word = word.translate(PUNCT_TABLE)
     word = word.lower()
-    if MAX_YS not in word:
-        word = STEMMER.stem(word)
     return word
 
 
