@@ -9,10 +9,9 @@ TRAIN_DATA = '../data/attempt4/pre-train.csv'
 VOCAB_DATA = '../data/attempt4/vocab.txt'
 
 
-def get_vocab(data):
+def get_vocab_from(data):
     vocab = defaultdict(lambda: defaultdict(lambda: 0))
-    toxic_data = data[data[CATLAB].sum(axis=1) > 0]
-    for _, row in toxic_data.iterrows():
+    for _, row in data.iterrows():
         for w in get_row_ngrams(row):
             k = w.count(' ') + 1
             vocab[k][w] += 1
@@ -21,6 +20,15 @@ def get_vocab(data):
         k_vocab = [w for (w, _) in k_vocab[:max_k]]
         vocab[k] = k_vocab
     return list(chain.from_iterable(vocab.values()))
+
+
+def get_vocab(data):
+    normal_data = data[data[CATLAB].sum(axis=1) == 0]
+    toxic_data = data[data[CATLAB].sum(axis=1) > 0]
+    print("normal=%d, toxic=%d" % (len(normal_data), len(toxic_data)))
+    normal_vocab = get_vocab_from(normal_data)
+    toxic_vocab = get_vocab_from(toxic_data)
+    return normal_vocab + toxic_vocab
 
 
 if __name__ == '__main__':

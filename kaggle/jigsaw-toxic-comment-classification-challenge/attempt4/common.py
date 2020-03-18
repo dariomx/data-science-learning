@@ -1,3 +1,5 @@
+from datetime import datetime as dt
+
 import nltk
 
 CATLAB = ['toxic',
@@ -14,7 +16,7 @@ WORD = 'word'
 COUNT = 'count'
 TOTAL = 'TOTAL'
 TOTAL_V = 'TOTAL_V'
-MAX_VOCAB = {1: 400, 2: 400, 3: 400, 4: 400, 5: 400}
+MAX_VOCAB = {1: 200, 2: 200, 3: 200, 4: 200, 5: 200}
 
 
 def get_row_ngrams(row):
@@ -27,3 +29,8 @@ def get_row_ngrams(row):
         ngrs += nltk.ngrams(words, k)
     ngrs = [' '.join(w) for w in ngrs]
     return set(ngrs)
+
+
+def logmsg(msg):
+    ts = dt.now().strftime('%b %d %Y %H:%M:%S')
+    print(ts + ': ' + msg)

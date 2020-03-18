@@ -49,14 +49,14 @@ def predict(data, model, vocab):
 
 
 if __name__ == '__main__':
-    print('Reading vocab ...')
+    logmsg('Reading vocab ...')
     vocab = get_vocab()
-    print('Reading data ...')
+    logmsg('Reading data ...')
     train_data = pd.read_csv(TRAIN_DATA, dtype={COMMENT: str})
     test_data = pd.read_csv(TEST_DATA, dtype={COMMENT: str})
-    print('Training the model ...')
+    logmsg('Training the model ...')
     model = train(train_data, vocab)
-    print('Testing the model ...')
+    logmsg('Testing the model ...')
     pred_data = predict(test_data, model, vocab)
-    print('Saving predictions ...')
+    logmsg('Saving predictions ...')
     pred_data.to_csv(PRED_DATA, index=False)

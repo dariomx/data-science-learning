@@ -5,6 +5,9 @@
 *.Rdata
 .Rhistory
 *.html
+*.pdf
+*.zip
+
 
 
 
