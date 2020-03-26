@@ -6,7 +6,7 @@ import pandas as pd
 from common import *
 
 TRAIN_DATA = '../data/attempt4/pre-train.csv'
-VOCAB_DATA = '../data/attempt4/vocab.txt'
+VOCAB_DATA = '../data/attempt4/vocab-4b.txt'
 
 
 def get_vocab_from(data):
@@ -26,9 +26,12 @@ def get_vocab(data):
     normal_data = data[data[CATLAB].sum(axis=1) == 0]
     toxic_data = data[data[CATLAB].sum(axis=1) > 0]
     print("normal=%d, toxic=%d" % (len(normal_data), len(toxic_data)))
-    normal_vocab = get_vocab_from(normal_data)
+    # these two are for c)
     toxic_vocab = get_vocab_from(toxic_data)
-    return normal_vocab + toxic_vocab
+    return toxic_vocab
+    # this is for d)
+    # normal_vocab = get_vocab_from(normal_data)
+    # return normal_vocab + toxic_vocab
 
 
 if __name__ == '__main__':

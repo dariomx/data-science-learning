@@ -16,7 +16,7 @@ WORD = 'word'
 COUNT = 'count'
 TOTAL = 'TOTAL'
 TOTAL_V = 'TOTAL_V'
-MAX_VOCAB = {1: 200, 2: 200, 3: 200, 4: 200, 5: 200}
+MAX_VOCAB = {1: 250, 2: 200, 3: 150, 4: 100, 5: 50}
 
 
 def get_row_ngrams(row):

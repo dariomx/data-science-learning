@@ -2,10 +2,10 @@ import pandas as pd
 
 from common import *
 
-VOCAB_DATA = '../data/attempt4/vocab.txt'
+VOCAB_DATA = '../data/attempt4/vocab-4b.txt'
 TRAIN_DATA = '../data/attempt4/pre-train.csv'
 TEST_DATA = '../data/attempt4/pre-test.csv'
-PRED_DATA = '../data/attempt4/pred-4d.csv'
+PRED_DATA = '../data/attempt4/pred-4b.csv'
 
 def get_vocab():
     with open(VOCAB_DATA) as f:
