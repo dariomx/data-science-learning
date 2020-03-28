@@ -5,7 +5,7 @@ from numpy import log
 
 from common import *
 
-ATTEMPT = '8'
+ATTEMPT = '9'
 TRAIN_FILE = '../data/attempt%s/pre-train.csv' % ATTEMPT
 VOCAB_FILE = '../data/attempt%s/vocab-%s.csv' % (ATTEMPT, ATTEMPT)
 
@@ -29,18 +29,28 @@ def calc_df(data, progress):
     return df, ntoxic_rows, normal_words, toxic_words
 
 
-def get_vocab(data, progress=1000):
-    df, ntoxic_rows, normal_words, toxic_words = calc_df(data, progress)
-    bad_words = toxic_words - normal_words
+def get_subvocab(data, df, wfilter, vid, n, max_size):
     idf = lambda w: log(len(data) / df[w])
-    vocab = [(w, df[w], idf(w)) for w in df if w in bad_words]
-    vocab = sorted(vocab, key=lambda t: t[1], reverse=True)
-    vocab = vocab[:MAX_VOCAB]
-    vocab = sorted(vocab, key=lambda t: t[0])
-    logmsg("normal rows=%d, toxic rows=%d", len(data) - ntoxic_rows,
-           ntoxic_rows)
-    logmsg("normal words=%d, toxic words=%d, bad words=%d",
-           len(df) - len(toxic_words), len(toxic_words), len(bad_words))
+    is_ngram = lambda w: w in wfilter and (w.count(' ') + 1) == n
+    vocab = [(vid, w, df[w], idf(w)) for w in df if is_ngram(w)]
+    vocab = sorted(vocab, key=lambda t: t[2], reverse=True)
+    vocab = vocab[:max_size]
+    return sorted(vocab, key=lambda t: t[1])
+
+
+def get_vocab(data, progress=1000):
+    df, _, normal_words, toxic_words = calc_df(data, progress)
+    bad_words = toxic_words - normal_words
+    good_words = normal_words - toxic_words
+    bad_vocab = []
+    good_vocab = []
+    for n, max_size in MAX_VOCAB.items():
+        bad_vocab += get_subvocab(data, df, bad_words, BAD_VOCAB, n, max_size)
+        good_vocab += get_subvocab(data, df, good_words, GOOD_VOCAB, n,
+                                   max_size)
+    vocab = bad_vocab + good_vocab
+    logmsg('total words=%d, good words=%d, bad words=%d',
+           len(df), len(good_words), len(bad_words))
     return pd.DataFrame(data=vocab, columns=VOCAB_COLS)
 
 
@@ -49,5 +59,5 @@ if __name__ == '__main__':
     train_data = pd.read_csv(TRAIN_FILE, dtype={COMMENT: str})
     logmsg('Computing vocabulary ...')
     vocab = get_vocab(train_data)
-    logmsg('Saving vocabulary (top %d bad words) ...', len(vocab))
+    logmsg('Saving vocabulary (top %d n-grams) ...', len(vocab))
     vocab.to_csv(VOCAB_FILE, index=False)

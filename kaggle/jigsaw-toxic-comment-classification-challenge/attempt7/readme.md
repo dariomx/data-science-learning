@@ -4,5 +4,5 @@
 
 2. Bag of words into counter vectors (save as scipy sparse matrices)
 
-3. Train and test with sklearn SVD
+3. Train and test with sklearn SVM
 

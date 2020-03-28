@@ -1,6 +1,5 @@
-from datetime import datetime as dt
-
 import nltk
+from datetime import datetime as dt
 
 CATLAB = ['toxic',
           'severe_toxic',
@@ -8,7 +7,9 @@ CATLAB = ['toxic',
           'threat',
           'insult',
           'identity_hate']
-CATIDX = {c: i for (i, c) in enumerate(CATLAB)}
+NONTOXIC = 'non_toxic'
+EXT_CATLAB = CATLAB + [NONTOXIC]
+CATIDX = {c: i for (i, c) in enumerate(EXT_CATLAB)}
 COMMENT = 'comment_text'
 ID = 'id'
 COLS = [ID] + CATLAB
@@ -17,9 +18,13 @@ WORD = 'word'
 COUNT = 'count'
 TOTAL = 'TOTAL'
 TOTAL_V = 'TOTAL_V'
-VOCAB_COLS = ['word', 'df', 'idf']
-MAX_NGRAMS = 1
-MAX_VOCAB = 2000
+VID = 'vid'
+NGRAM = 'n-gram'
+VOCAB_COLS = [VID, NGRAM, 'df', 'idf']
+MAX_VOCAB = {1: 2000, 2: 1000, 3: 500, 4: 250, 5: 125}
+BAD_VOCAB = 0
+GOOD_VOCAB = 1
+
 
 def get_row_ngrams(row):
     try:
@@ -27,8 +32,8 @@ def get_row_ngrams(row):
     except AttributeError:
         return set()
     ngrs = []
-    for k in range(1, MAX_NGRAMS+1):
-        ngrs += nltk.ngrams(words, k)
+    for n in MAX_VOCAB:
+        ngrs += nltk.ngrams(words, n)
     ngrs = [' '.join(w) for w in ngrs]
     return set(ngrs)
 

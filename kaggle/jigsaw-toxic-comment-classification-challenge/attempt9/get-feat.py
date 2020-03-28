@@ -7,7 +7,7 @@ from scipy.sparse import coo_matrix, save_npz
 
 from common import *
 
-ATTEMPT = '8'
+ATTEMPT = '9'
 PREFIX = '../data/attempt%s' % ATTEMPT
 VOCAB_FILE = join(PREFIX, 'vocab-%s.csv' % ATTEMPT)
 TRAIN_FILE = join(PREFIX, 'pre-train.csv')
@@ -18,18 +18,23 @@ TEST_X_FILE = join(PREFIX, 'test-x.npz')
 
 
 def get_vocab(vocab_file):
-    cname = VOCAB_COLS[0]
-    vocab = pd.read_csv(vocab_file, usecols=[cname], dtype={cname: str})
-    return vocab[cname].values
+    vocab = pd.read_csv(vocab_file, usecols=[NGRAM], dtype={NGRAM: str})
+    return {v: i for (i, v) in enumerate(vocab[NGRAM].values)}
+
+
+def read_train_data(train_file):
+    data = pd.read_csv(train_file, dtype={COMMENT: str})
+    data[NONTOXIC] = (data[CATLAB].sum(axis=1) == 0).astype(int)
+    return data
+
 
 def calc_row_feat(row, vocab):
-    V = {v: i for (i, v) in enumerate(vocab)}
     row_feat = defaultdict(lambda: 0)
     row_words = get_row_ngrams(row)
     for w in row_words:
-        i = V.get(w, -1)
+        i = vocab.get(w, -1)
         if i >= 0:
-            row_feat[V[w]] += 1
+            row_feat[vocab[w]] = 1
     return row_feat
 
 
@@ -39,7 +44,9 @@ def calc_train_feat(data, vocab, progress=1000):
     used = set()
     for i, row in data.iterrows():
         row_feat = calc_row_feat(row, vocab)
-        for cat in CATLAB:
+        if len(row_feat) == 0:
+            continue
+        for cat in EXT_CATLAB:
             if row[cat] == 0:
                 continue
             used.add(i)
@@ -91,7 +98,7 @@ def get_train_feat(vocab_file, train_file, train_x_file, train_y_file):
     logmsg('Reading vocab ...')
     vocab = get_vocab(vocab_file)
     logmsg('Reading training data ...')
-    train_data = pd.read_csv(train_file, dtype={COMMENT: str})
+    train_data = read_train_data(train_file)
     logmsg('Extracting features from training data ...')
     x, y = calc_train_feat(train_data, vocab)
     logmsg('Saving training features ...')
