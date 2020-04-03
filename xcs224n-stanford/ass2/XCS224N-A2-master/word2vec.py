@@ -16,10 +16,16 @@ def sigmoid(x):
     Return:
     s -- sigmoid(x)
     """
-    # taken from stackoverflow post, claiming numerical stability
-    return np.where(x >= 0,
-                    1 / (1 + np.exp(-x)),
-                    np.exp(x) / (1 + np.exp(x)))
+    # TODO: taken from stackoverflow post, claiming numerical stability:
+    #
+    # return np.where(x >= 0,
+    #                     1 / (1 + np.exp(-x)),
+    #                     np.exp(x) / (1 + np.exp(x)))
+    #
+    # does the above slow down execution? profiling suggest it does not,
+    # but let us comment for now aiming to reproduce that 1hr execution
+    #
+    return 1 / (1 + np.exp(-x))
 
 
 def naiveSoftmaxLossAndGradient(

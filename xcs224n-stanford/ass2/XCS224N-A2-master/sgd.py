@@ -8,6 +8,7 @@ import glob
 import random
 import numpy as np
 import os.path as op
+from datetime import datetime
 
 
 def load_saved_params():
@@ -94,8 +95,9 @@ def sgd(f, x0, step, iterations, postprocessing=None, useSaved=False,
                 exploss = loss
             else:
                 exploss = .95 * exploss + .05 * loss
-            print("iter %d: %f" % (iter, exploss))
-            #print("iter %d: %f %f" % (iter, loss, exploss))
+            #print("iter %d: %f" % (iter, exploss))
+            ts = datetime.now().isoformat(' ')
+            print("%s: iter %d: %f %f" % (ts, iter, loss, exploss))
 
         if iter % SAVE_PARAMS_EVERY == 0 and useSaved:
             save_params(iter, x)
