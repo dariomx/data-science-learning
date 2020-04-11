@@ -7,6 +7,9 @@
 *.html
 *.pdf
 *.zip
+*.npy
+*.npz
+*.csv
 
 
 

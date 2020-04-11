@@ -69,7 +69,8 @@ def reduceToKDim(M, k=2):
             k (int): embedding size of each word after dimension reduction
         Return:
             M_reduced (numpy matrix of shape (number of corpus words, k)): matrix of k-dimensioal word embeddings.
-                    In terms of the SVD from math class, this actually returns U * S
+                    In terms of the SVD from math class, this actually
+                    returns U * Ss
     """
     np.random.seed(4355)
     n_iters = 10  # Use this parameter in your call to `TruncatedSVD`
