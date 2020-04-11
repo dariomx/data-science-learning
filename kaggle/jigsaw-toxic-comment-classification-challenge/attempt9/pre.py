@@ -13,8 +13,8 @@ from nltk import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 
 IN_OUT = {
-    '../data/train.csv': ('../data/attempt7/pre-train.csv', True),
-    '../data/test.csv': ('../data/attempt7/pre-test.csv', False)
+    '../data/train.csv': ('../data/attempt9/pre-train.csv', True),
+    '../data/test.csv': ('../data/attempt9/pre-test.csv', False)
 }
 
 from common import COMMENT

@@ -1,5 +1,6 @@
 from os.path import join
 
+import sys
 import numpy as np
 import pandas as pd
 from scipy.sparse import load_npz
@@ -21,18 +22,19 @@ def load_sparse_mat(fname):
     return load_npz(fname).tocsr()
 
 
-def train(x, y):
-    svc = SVC(probability=True)
+def train(x, y, C):
+    logmsg('Will use SVC with C=%f', C)
+    svc = SVC(probability=True, C=C, class_weight='balanced')
     svc.fit(x, y)
     return svc
 
 
-def do_train(train_x_file, train_y_file):
+def do_train(train_x_file, train_y_file, C):
     logmsg('Loading training data ...')
     x = load_sparse_mat(train_x_file)
     y = np.load(train_y_file)
     logmsg('Training the model ...')
-    return train(x, y)
+    return train(x, y, C)
 
 
 def test(model, x):
@@ -62,5 +64,6 @@ def do_test(model, test_file, test_x_file, pred_file):
 
 
 if __name__ == '__main__':
-    model = do_train(TRAIN_X_FILE, TRAIN_Y_FILE)
+    C = float(sys.argv[1])
+    model = do_train(TRAIN_X_FILE, TRAIN_Y_FILE, C)
     do_test(model, TEST_FILE, TEST_X_FILE, PRED_FILE)
