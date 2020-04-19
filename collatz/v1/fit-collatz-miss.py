@@ -3,8 +3,9 @@ from time import process_time
 import matplotlib.pyplot as plt
 from fitter import Fitter
 from scipy.stats import anderson
+from statsmodels.stats._lilliefors import lilliefors
 
-from collatz.misc import get_fullpath, get_data, logmsg
+from collatz.v1.misc import get_fullpath, get_data, logmsg
 
 STOP_FILE = get_fullpath('data/collatz-stop.csv')
 
@@ -27,15 +28,15 @@ def fit_exp(miss):
     dist = ['expon']
     f = Fitter(miss, distributions=dist, timeout=600)
     f.fit()
-    logmsg('fitted params exp = %s', str(f.fitted_param))
+    # logmsg('fitted params exp = %s', str(f.fitted_param))
     # f.summary()
     # plt.show()
-    return f.fitted_param['expon'][1]
+    return f.df_errors['expon']
 
 
 def stat_test(x):
     start = process_time()
-    # _, pval = lilliefors(x, dist='exp')
+    _, pval = lilliefors(x, dist='exp')
     stat, critval, alpha = anderson(x, dist='expon')
     end = process_time()
     logmsg('sample_size=%d: Anderson: %s %s %s (%f secs)',
@@ -73,6 +74,6 @@ def calc_lambda(miss):
 
 # main
 miss = get_miss(STOP_FILE)
-ssm, lam = calc_lambda(miss)
-plt.plot(ssm, miss)
-plt.show()
+step = 10000
+for ss in range(step, 1000000+1, step):
+    print(fit_exp(miss[:(ss+1)]))

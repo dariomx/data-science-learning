@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 from fitter import Fitter
 from scipy.stats import normaltest
 
-from collatz.misc import get_fullpath, get_data, logmsg
+from collatz.v1.misc import get_fullpath, get_data, logmsg
 
-STOP_FILE = get_fullpath('data/collatz-stop.csv')
+STOP_FILE = get_fullpath('data/collatz-stop-100.csv')
 stop = get_data(STOP_FILE)['stop']
 plt.hist(stop, density=True, bins=100)
 plt.show()

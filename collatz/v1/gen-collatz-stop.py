@@ -2,11 +2,11 @@
 
 import pandas as pd
 
-from collatz.misc import get_fullpath, logmsg
+from collatz.v1.misc import get_fullpath, logmsg
 
-MAX_N = 100000000
+MAX_N = 100
 
-STOP_FILE = get_fullpath('data/collatz-stop.csv')
+STOP_FILE = get_fullpath('data/collatz-stop-%d.csv' % MAX_N)
 COLS = ['n', 'stop', 'miss']
 cache = dict()
 
