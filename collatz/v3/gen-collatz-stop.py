@@ -2,9 +2,9 @@
 
 import pandas as pd
 
-from collatz.v2.misc import get_fullpath, logmsg
+from collatz.v3.misc import get_fullpath, logmsg
 
-MAX_N = 1000000
+MAX_N = 10000000
 
 STOP_FILE = get_fullpath('data/collatz-stop-%d.csv' % MAX_N)
 COLS = ['n', 'stop', 'miss']
