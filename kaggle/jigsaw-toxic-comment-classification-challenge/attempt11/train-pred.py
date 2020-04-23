@@ -1,40 +1,33 @@
 from os.path import join
 
-import sys
 import numpy as np
 import pandas as pd
-from scipy.sparse import load_npz
 from sklearn.svm import SVC
 
 from common import *
 
 ATTEMPT = 11
 PREFIX = '../data/attempt%s' % ATTEMPT
-TRAIN_X_FILE = join(PREFIX, 'train-x.npz')
+TRAIN_X_FILE = join(PREFIX, 'train-x.npy')
 TRAIN_Y_FILE = join(PREFIX, 'train-y.npy')
 TEST_FILE = join(PREFIX, 'pre-test.csv')
-TEST_X_FILE = join(PREFIX, 'test-x.npz')
+TEST_X_FILE = join(PREFIX, 'test-x.npy')
 PRED_FILE = join(PREFIX, 'pred-%d.csv' % ATTEMPT)
 
 
-# convert to csr format to speed up computations (scipy recommendation?)
-def load_sparse_mat(fname):
-    return load_npz(fname).tocsr()
-
-
-def train(x, y, C):
+def train(x, y, C, gamma):
     logmsg('Will use SVC with C=%f', C)
-    svc = SVC(probability=True, C=C, class_weight='balanced')
+    svc = SVC(probability=True, C=C, gamma=gamma, class_weight='balanced')
     svc.fit(x, y)
     return svc
 
 
-def do_train(train_x_file, train_y_file, C):
+def do_train(train_x_file, train_y_file, C, gamma):
     logmsg('Loading training data ...')
-    x = load_sparse_mat(train_x_file)
+    x = np.load(train_x_file)
     y = np.load(train_y_file)
-    logmsg('Training the model ...')
-    return train(x, y, C)
+    logmsg('Training the model (%d x %d)...' % x.shape)
+    return train(x, y, C, gamma)
 
 
 def test(model, x):
@@ -55,7 +48,7 @@ def format_pred(prob, data):
 def do_test(model, test_file, test_x_file, pred_file):
     logmsg('Loading testing data ...')
     data = pd.read_csv(test_file, usecols=[ID], dtype={COMMENT: str})
-    x = load_sparse_mat(test_x_file)
+    x = np.load(test_x_file)
     logmsg('Testing the model ...')
     prob = test(model, x)
     logmsg('Saving predictions ...')
@@ -64,6 +57,7 @@ def do_test(model, test_file, test_x_file, pred_file):
 
 
 if __name__ == '__main__':
-    C = float(sys.argv[1])
-    model = do_train(TRAIN_X_FILE, TRAIN_Y_FILE, C)
+    C = 1
+    gamma = 'auto'
+    model = do_train(TRAIN_X_FILE, TRAIN_Y_FILE, C, gamma)
     do_test(model, TEST_FILE, TEST_X_FILE, PRED_FILE)
