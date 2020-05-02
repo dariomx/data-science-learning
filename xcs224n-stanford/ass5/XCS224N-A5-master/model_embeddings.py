@@ -34,6 +34,7 @@ class ModelEmbeddings(nn.Module):
         documentation.
         """
         super(ModelEmbeddings, self).__init__()
+        self.embed_size = w_embed_size
         self.charEmbeddings = nn.Embedding(len(vocab.char2id),
                                            c_embed_size,
                                            padding_idx=vocab.char2id['<pad>'])
@@ -61,7 +62,7 @@ class ModelEmbeddings(nn.Module):
         x_reshaped = x_emb.permute(0, 1, 3, 2)
         x_word_emb = []
         for i in range(x_reshaped.size()[0]):
-            x_word_emb_i = self.words_batch(x_reshaped[i, :, :, :])
+            x_word_emb_i = self._words_batch(x_reshaped[i, :, :, :])
             x_word_emb.append(x_word_emb_i)
         x_word_emb = torch.stack(x_word_emb)
         # (batch_size, sentence_length, w_embed_size)
@@ -69,7 +70,7 @@ class ModelEmbeddings(nn.Module):
         # (sentence_length, batch_size, w_embed_size)
         return x_word_emb
 
-    def words_batch(self, x_reshaped):
+    def _words_batch(self, x_reshaped):
         # (sentence_length, c_embed_size, max_word_length)
         x_conv = self.cnn(x_reshaped)
         # (sentence_length, w_embed_size, max_word_length-k+1)
