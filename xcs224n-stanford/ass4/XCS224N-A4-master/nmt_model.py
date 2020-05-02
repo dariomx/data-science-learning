@@ -259,7 +259,7 @@ class NMT(nn.Module):
         if enc_masks is not None:
             e_t.data.masked_fill_(enc_masks.bool(), -float('inf'))
 
-        alpha_t = (nn.Softmax())(e_t)
+        alpha_t = (nn.Softmax(dim=0))(e_t)
         alpha_t = torch.unsqueeze(alpha_t, dim=1)
         a_t = torch.bmm(alpha_t, enc_hiddens)
         a_t = torch.squeeze(a_t, dim=1)
