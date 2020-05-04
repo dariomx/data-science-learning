@@ -67,7 +67,6 @@ class CharDecoder(nn.Module):
         cross-entropy losses of all the words in the batch, for every
         character in the sequence.
         """
-        batch = char_sequence.shape[-1]
         # (length, batch)
         x = char_sequence[:-1, :]
         # (length-1, batch)
