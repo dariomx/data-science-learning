@@ -73,17 +73,12 @@ class CharDecoder(nn.Module):
         # (length-1, batch)
         s, _ = self.forward(x, dec_hidden)
         # (length-1, batch, self.vocab_size)
+        s = s.permute(0, 2, 1)
+        # (length-1, self.vocab_size, batch)
         char_pad_ix = self.target_vocab.char2id['<pad>']
-        lossCalc = nn.CrossEntropyLoss(reduction='sum',
-                                       ignore_index=char_pad_ix)
-        loss = 0
-        for i in range(batch):
-            s_i = s[:, i, :].squeeze()
-            # (length-1, self.vocab_size)
-            tgt_i = char_sequence[1:, i].squeeze()
-            # (length-1)
-            loss += lossCalc(s_i, tgt_i)
-        return loss
+        loss = nn.CrossEntropyLoss(reduction='sum',
+                                   ignore_index=char_pad_ix)
+        return loss(s, char_sequence[1:, :])
 
     def decode_greedy(self, initialStates, device, max_length=21):
         """ Greedy decoding
