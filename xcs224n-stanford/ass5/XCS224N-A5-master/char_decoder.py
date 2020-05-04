@@ -121,8 +121,11 @@ class CharDecoder(nn.Module):
         decodedWords = []
         for j in range(batch):
             word = outputWords[:, j].tolist()
-            wordLen = word.index(end_ix)
-            word = word[:wordLen]
+            try:
+                wordLen = word.index(end_ix)
+                word = word[:wordLen]
+            except ValueError:
+                print('Warning: could not find end_ix: ' + str(word))
             decWord = ''.join([id2char[i] for i in word])
             decodedWords.append(decWord)
         return decodedWords
