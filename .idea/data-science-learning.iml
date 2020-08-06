@@ -5,15 +5,17 @@
       <sourceFolder url="file://$MODULE_DIR$/machine-learning/training-oracle/expo-kmeans-pca-spike-sorting" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/xcs224n-stanford/XCS224N-A1-master" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kaggle/jigsaw-toxic-comment-classification-challenge/attempt11" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/xcs224n-stanford/ass4/XCS224N-A4-master" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xcs224n-stanford/ass5/XCS224N-A5-master" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.6.3 (C:\Users\dbahena\Anaconda3\python.exe)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="topcoder-srm" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="requirementsPath" value="" />
   </component>
   <component name="TestRunnerService">
-    <option name="PROJECT_TEST_RUNNER" value="Unittests" />
+    <option name="projectConfiguration" value="pytest" />
+    <option name="PROJECT_TEST_RUNNER" value="pytest" />
   </component>
 </module>
